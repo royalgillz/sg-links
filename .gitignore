@@ -22,3 +22,9 @@ application-local.yml
 # Logs
 *.log
 logs/
+
+# Frontend
+frontend/node_modules/
+frontend/node/
+frontend/dist/
+src/main/resources/static/
