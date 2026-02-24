@@ -53,16 +53,11 @@
       <artifactId>spring-boot-starter-validation</artifactId>
     </dependency>
 
-    <!-- Flyway core + PostgreSQL module (required for Flyway 10+) -->
+    <!-- Flyway -->
     <dependency>
       <groupId>org.flywaydb</groupId>
       <artifactId>flyway-core</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.flywaydb</groupId>
-      <artifactId>flyway-database-postgresql</artifactId>
-    </dependency>
-
     <!-- PostgreSQL driver -->
     <dependency>
       <groupId>org.postgresql</groupId>
