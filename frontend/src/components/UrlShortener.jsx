@@ -1,5 +1,5 @@
 export default function UrlShortener({
-  url, setUrl, result, stats, error, loading, copied, handleSubmit, handleCopy,
+  url, setUrl, result, stats, error, loading, copied, handleSubmit, handleCopy, onRefreshStats,
 }) {
   return (
     <div className="min-h-screen bg-gray-950 flex items-center justify-center p-4">
@@ -83,6 +83,13 @@ export default function UrlShortener({
                   <span className="text-xs bg-violet-900/50 text-violet-300 px-2 py-0.5 rounded-full font-mono">
                     {stats.totalClicks} {stats.totalClicks === 1 ? 'click' : 'clicks'}
                   </span>
+                  <button
+                    onClick={onRefreshStats}
+                    className="ml-auto text-xs text-gray-600 hover:text-gray-400 transition-colors"
+                    title="Refresh stats"
+                  >
+                    ↻ Refresh
+                  </button>
                 </div>
                 {stats.recentClicks.length > 0 ? (
                   <ul className="space-y-1">

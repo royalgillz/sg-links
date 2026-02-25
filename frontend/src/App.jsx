@@ -61,6 +61,7 @@ function App() {
       copied={copied}
       handleSubmit={handleSubmit}
       handleCopy={handleCopy}
+      onRefreshStats={() => result && fetchStats(result.shortCode)}
     />
   )
 }
