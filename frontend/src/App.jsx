@@ -4,6 +4,7 @@ import UrlShortener from './components/UrlShortener'
 function App() {
   const [url, setUrl] = useState('')
   const [result, setResult] = useState(null)
+  const [stats, setStats] = useState(null)
   const [error, setError] = useState(null)
   const [loading, setLoading] = useState(false)
   const [copied, setCopied] = useState(false)
@@ -13,6 +14,7 @@ function App() {
     setLoading(true)
     setError(null)
     setResult(null)
+    setStats(null)
     try {
       const res = await fetch('/api/urls', {
         method: 'POST',
@@ -24,11 +26,21 @@ function App() {
         setError(data.message ?? 'Something went wrong.')
       } else {
         setResult(data)
+        fetchStats(data.shortCode)
       }
     } catch {
       setError('Network error. Is the backend running?')
     } finally {
       setLoading(false)
+    }
+  }
+
+  async function fetchStats(code) {
+    try {
+      const res = await fetch(`/api/urls/${code}/stats`)
+      if (res.ok) setStats(await res.json())
+    } catch {
+      // stats are non-critical, fail silently
     }
   }
 
@@ -43,6 +55,7 @@ function App() {
       url={url}
       setUrl={setUrl}
       result={result}
+      stats={stats}
       error={error}
       loading={loading}
       copied={copied}

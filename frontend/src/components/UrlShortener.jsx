@@ -1,5 +1,5 @@
 export default function UrlShortener({
-  url, setUrl, result, error, loading, copied, handleSubmit, handleCopy,
+  url, setUrl, result, stats, error, loading, copied, handleSubmit, handleCopy,
 }) {
   return (
     <div className="min-h-screen bg-gray-950 flex items-center justify-center p-4">
@@ -46,8 +46,9 @@ export default function UrlShortener({
 
         {/* Result */}
         {result && (
-          <div className="mt-4 bg-gray-900 border border-gray-700 rounded-lg p-4">
-            <p className="text-xs text-gray-500 uppercase tracking-wider mb-2">Your short link</p>
+          <div className="mt-4 bg-gray-900 border border-gray-700 rounded-lg p-4 space-y-3">
+            <p className="text-xs text-gray-500 uppercase tracking-wider">Your short link</p>
+
             <div className="flex items-center gap-2">
               <span className="flex-1 font-mono text-violet-400 text-sm truncate">
                 {result.shortUrl}
@@ -69,9 +70,40 @@ export default function UrlShortener({
                 Open
               </a>
             </div>
-            <p className="text-xs text-gray-600 mt-2 truncate">
+
+            <p className="text-xs text-gray-600 truncate">
               Original: {result.originalUrl}
             </p>
+
+            {/* Stats */}
+            {stats && (
+              <div className="border-t border-gray-800 pt-3 mt-1">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-xs text-gray-500 uppercase tracking-wider">Analytics</span>
+                  <span className="text-xs bg-violet-900/50 text-violet-300 px-2 py-0.5 rounded-full font-mono">
+                    {stats.totalClicks} {stats.totalClicks === 1 ? 'click' : 'clicks'}
+                  </span>
+                </div>
+                {stats.recentClicks.length > 0 ? (
+                  <ul className="space-y-1">
+                    {stats.recentClicks.map((c, i) => (
+                      <li key={i} className="flex items-center gap-2 text-xs text-gray-500">
+                        <span className="text-gray-600">
+                          {new Date(c.clickedAt).toLocaleString()}
+                        </span>
+                        {c.referrer && (
+                          <span className="truncate text-gray-600" title={c.referrer}>
+                            ← {new URL(c.referrer).hostname}
+                          </span>
+                        )}
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p className="text-xs text-gray-600">No clicks yet. Share your link!</p>
+                )}
+              </div>
+            )}
           </div>
         )}
 
