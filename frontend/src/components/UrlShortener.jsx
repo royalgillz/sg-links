@@ -1,7 +1,7 @@
 import ThreeBackground from './ThreeBackground'
 
 export default function UrlShortener({
-  url, setUrl, result, stats, error, loading, copied, handleSubmit, handleCopy,
+  url, setUrl, alias, setAlias, result, stats, error, loading, copied, handleSubmit, handleCopy,
 }) {
   return (
     <div className="relative min-h-screen bg-gray-950 overflow-hidden flex items-center justify-center p-4">
@@ -38,36 +38,53 @@ export default function UrlShortener({
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-2">
-          <input
-            type="url"
-            required
-            placeholder="https://your-long-url.com/goes/here"
-            value={url}
-            onChange={e => setUrl(e.target.value)}
-            className="flex-1 bg-white/5 border border-white/10 text-white placeholder-gray-500
-                       rounded-xl px-4 py-3.5 text-sm backdrop-blur focus:outline-none
-                       focus:border-violet-500 focus:ring-1 focus:ring-violet-500/50 transition-all"
-          />
-          <button
-            type="submit"
-            disabled={loading}
-            className="sm:w-auto w-full bg-gradient-to-r from-violet-600 to-fuchsia-600
-                       hover:from-violet-500 hover:to-fuchsia-500
-                       disabled:from-violet-800 disabled:to-fuchsia-800 disabled:cursor-not-allowed
-                       text-white font-semibold px-6 py-3.5 rounded-xl text-sm transition-all
-                       shadow-lg shadow-violet-900/40"
-          >
-            {loading ? (
-              <span className="flex items-center gap-2 justify-center">
-                <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none">
-                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
-                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/>
-                </svg>
-                Shortening…
-              </span>
-            ) : 'Shorten →'}
-          </button>
+        <form onSubmit={handleSubmit} className="space-y-2">
+          <div className="flex flex-col sm:flex-row gap-2">
+            <input
+              type="url"
+              required
+              placeholder="https://your-long-url.com/goes/here"
+              value={url}
+              onChange={e => setUrl(e.target.value)}
+              className="flex-1 bg-white/5 border border-white/10 text-white placeholder-gray-500
+                         rounded-xl px-4 py-3.5 text-sm backdrop-blur focus:outline-none
+                         focus:border-violet-500 focus:ring-1 focus:ring-violet-500/50 transition-all"
+            />
+            <button
+              type="submit"
+              disabled={loading}
+              className="sm:w-auto w-full bg-gradient-to-r from-violet-600 to-fuchsia-600
+                         hover:from-violet-500 hover:to-fuchsia-500
+                         disabled:from-violet-800 disabled:to-fuchsia-800 disabled:cursor-not-allowed
+                         text-white font-semibold px-6 py-3.5 rounded-xl text-sm transition-all
+                         shadow-lg shadow-violet-900/40"
+            >
+              {loading ? (
+                <span className="flex items-center gap-2 justify-center">
+                  <svg className="animate-spin w-4 h-4" viewBox="0 0 24 24" fill="none">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/>
+                  </svg>
+                  Shortening…
+                </span>
+              ) : 'Shorten →'}
+            </button>
+          </div>
+
+          {/* Custom alias */}
+          <div className="flex items-center gap-2">
+            <span className="text-xs text-gray-600 shrink-0">localhost:8080/</span>
+            <input
+              type="text"
+              placeholder="custom-alias  (optional)"
+              value={alias}
+              onChange={e => setAlias(e.target.value)}
+              maxLength={20}
+              className="flex-1 bg-white/5 border border-white/10 text-white placeholder-gray-600
+                         rounded-lg px-3 py-2 text-xs backdrop-blur focus:outline-none
+                         focus:border-violet-500/50 transition-all font-mono"
+            />
+          </div>
         </form>
 
         {/* Error */}

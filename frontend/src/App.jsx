@@ -3,6 +3,7 @@ import UrlShortener from './components/UrlShortener'
 
 export default function App() {
   const [url, setUrl] = useState('')
+  const [alias, setAlias] = useState('')
   const [result, setResult] = useState(null)
   const [stats, setStats] = useState(null)
   const [error, setError] = useState(null)
@@ -37,7 +38,7 @@ export default function App() {
       const res = await fetch('/api/urls', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ url }),
+        body: JSON.stringify({ url, alias: alias.trim() || null }),
       })
       const data = await res.json()
       if (!res.ok) {
@@ -63,6 +64,8 @@ export default function App() {
     <UrlShortener
       url={url}
       setUrl={setUrl}
+      alias={alias}
+      setAlias={setAlias}
       result={result}
       stats={stats}
       error={error}

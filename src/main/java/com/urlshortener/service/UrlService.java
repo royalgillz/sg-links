@@ -4,6 +4,7 @@ import com.urlshortener.dto.ClickRecord;
 import com.urlshortener.dto.ShortenRequest;
 import com.urlshortener.dto.ShortenResponse;
 import com.urlshortener.dto.StatsResponse;
+import com.urlshortener.exception.AliasConflictException;
 import com.urlshortener.exception.UrlNotFoundException;
 import com.urlshortener.model.Click;
 import com.urlshortener.model.Url;
@@ -31,7 +32,16 @@ public class UrlService {
 
     @Transactional
     public ShortenResponse shorten(ShortenRequest request) {
-        String code = generateUniqueCode();
+        String code;
+
+        if (request.alias() != null && !request.alias().isBlank()) {
+            code = request.alias();
+            if (bloomFilterService.mightExist(code) && urlRepository.existsByShortCode(code)) {
+                throw new AliasConflictException(code);
+            }
+        } else {
+            code = generateUniqueCode();
+        }
 
         Url url = new Url();
         url.setShortCode(code);
