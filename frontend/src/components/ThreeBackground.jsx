@@ -97,10 +97,11 @@ export default function ThreeBackground() {
 
     // Animation
     let frameId
-    const clock = new THREE.Clock()
+    const timer = new THREE.Timer()
     const animate = () => {
       frameId = requestAnimationFrame(animate)
-      const t = clock.getElapsedTime()
+      timer.update()
+      const t = timer.getElapsed()
 
       torus.rotation.x = t * 0.3
       torus.rotation.y = t * 0.5
