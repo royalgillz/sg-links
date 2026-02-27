@@ -12,6 +12,7 @@ import com.urlshortener.repository.ClickRepository;
 import com.urlshortener.repository.UrlRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -47,7 +48,12 @@ public class UrlService {
         url.setShortCode(code);
         url.setOriginalUrl(request.url());
 
-        urlRepository.save(url);
+        try {
+            urlRepository.saveAndFlush(url);
+        } catch (DataIntegrityViolationException e) {
+            // Race condition: another request inserted the same alias between our check and save
+            throw new AliasConflictException(code);
+        }
         bloomFilterService.add(code);
 
         return new ShortenResponse(code, baseUrl + "/" + code, request.url());
@@ -63,12 +69,12 @@ public class UrlService {
 
         Click click = new Click();
         click.setUrl(url);
-        click.setReferrer(referrer);
-        click.setUserAgent(userAgent);
+        click.setReferrer(truncate(referrer, 2048));
+        click.setUserAgent(truncate(userAgent, 512));
         clickRepository.save(click);
 
-        url.setClickCount(url.getClickCount() + 1);
-        urlRepository.save(url);
+        // Atomic increment — avoids lost-update race condition under concurrent traffic
+        urlRepository.incrementClickCount(url.getId());
 
         return url.getOriginalUrl();
     }
@@ -101,5 +107,10 @@ public class UrlService {
             }
         }
         throw new IllegalStateException("Failed to generate a unique short code after 10 attempts");
+    }
+
+    private static String truncate(String value, int max) {
+        if (value == null) return null;
+        return value.length() <= max ? value : value.substring(0, max);
     }
 }

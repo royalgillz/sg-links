@@ -156,7 +156,7 @@ export default function UrlShortener({
                           {new Date(c.clickedAt).toLocaleTimeString()}
                         </span>
                         <span className="text-gray-400 truncate">
-                          {c.referrer
+                          {c.referrer && c.referrer.trim()
                             ? (() => { try { return new URL(c.referrer).hostname } catch { return c.referrer } })()
                             : <span className="text-gray-600 italic">direct</span>}
                         </span>

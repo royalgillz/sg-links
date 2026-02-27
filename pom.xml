@@ -102,12 +102,12 @@
           <execution>
             <id>install-node-and-npm</id>
             <goals><goal>install-node-and-npm</goal></goals>
-            <phase>generate-resources</phase>
+            <phase>prepare-package</phase>
           </execution>
           <execution>
             <id>npm-install</id>
             <goals><goal>npm</goal></goals>
-            <phase>generate-resources</phase>
+            <phase>prepare-package</phase>
             <configuration>
               <arguments>install</arguments>
             </configuration>
@@ -115,7 +115,7 @@
           <execution>
             <id>npm-build</id>
             <goals><goal>npm</goal></goals>
-            <phase>generate-resources</phase>
+            <phase>prepare-package</phase>
             <configuration>
               <arguments>run build</arguments>
             </configuration>

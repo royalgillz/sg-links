@@ -42,7 +42,7 @@ export default function App() {
       })
       const data = await res.json()
       if (!res.ok) {
-        setError(data.message ?? 'Something went wrong.')
+        setError(data.error ?? 'Something went wrong.')
       } else {
         setResult(data)
         fetchStats(data.shortCode)

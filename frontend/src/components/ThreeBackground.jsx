@@ -125,7 +125,9 @@ export default function ThreeBackground() {
       cancelAnimationFrame(frameId)
       window.removeEventListener('resize', onResize)
       window.removeEventListener('mousemove', onMouse)
-      mount.removeChild(renderer.domElement)
+      if (mount.contains(renderer.domElement)) {
+        mount.removeChild(renderer.domElement)
+      }
       renderer.dispose()
     }
   }, [])
