@@ -1,5 +1,6 @@
 package com.urlshortener.dto;
 
+import java.time.OffsetDateTime;
 import java.util.List;
 
 public record StatsResponse(
@@ -7,5 +8,6 @@ public record StatsResponse(
         String shortUrl,
         String originalUrl,
         long totalClicks,
-        List<ClickRecord> recentClicks
+        List<ClickRecord> recentClicks,
+        OffsetDateTime expiresAt
 ) {}

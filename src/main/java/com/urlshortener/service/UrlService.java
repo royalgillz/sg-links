@@ -5,6 +5,7 @@ import com.urlshortener.dto.ShortenRequest;
 import com.urlshortener.dto.ShortenResponse;
 import com.urlshortener.dto.StatsResponse;
 import com.urlshortener.exception.AliasConflictException;
+import com.urlshortener.exception.UrlExpiredException;
 import com.urlshortener.exception.UrlNotFoundException;
 import com.urlshortener.model.Click;
 import com.urlshortener.model.Url;
@@ -17,6 +18,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
 
 @Service
@@ -44,9 +47,15 @@ public class UrlService {
             code = generateUniqueCode();
         }
 
+        OffsetDateTime expiresAt = null;
+        if (request.expiryDays() != null) {
+            expiresAt = OffsetDateTime.now(ZoneOffset.UTC).plusDays(request.expiryDays());
+        }
+
         Url url = new Url();
         url.setShortCode(code);
         url.setOriginalUrl(request.url());
+        url.setExpiresAt(expiresAt);
 
         try {
             urlRepository.saveAndFlush(url);
@@ -56,7 +65,7 @@ public class UrlService {
         }
         bloomFilterService.add(code);
 
-        return new ShortenResponse(code, baseUrl + "/" + code, request.url());
+        return new ShortenResponse(code, baseUrl + "/" + code, request.url(), expiresAt);
     }
 
     @Transactional
@@ -66,6 +75,10 @@ public class UrlService {
         }
         Url url = urlRepository.findByShortCode(code)
                 .orElseThrow(() -> new UrlNotFoundException(code));
+
+        if (url.getExpiresAt() != null && url.getExpiresAt().isBefore(OffsetDateTime.now(ZoneOffset.UTC))) {
+            throw new UrlExpiredException(code);
+        }
 
         Click click = new Click();
         click.setUrl(url);
@@ -95,7 +108,8 @@ public class UrlService {
                 baseUrl + "/" + code,
                 url.getOriginalUrl(),
                 url.getClickCount(),
-                recent
+                recent,
+                url.getExpiresAt()
         );
     }
 

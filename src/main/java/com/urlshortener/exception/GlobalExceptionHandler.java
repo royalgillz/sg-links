@@ -18,6 +18,12 @@ public class GlobalExceptionHandler {
                 .body(new ErrorResponse(ex.getMessage()));
     }
 
+    @ExceptionHandler(UrlExpiredException.class)
+    public ResponseEntity<ErrorResponse> handleExpired(UrlExpiredException ex) {
+        return ResponseEntity.status(HttpStatus.GONE)
+                .body(new ErrorResponse(ex.getMessage()));
+    }
+
     @ExceptionHandler(AliasConflictException.class)
     public ResponseEntity<ErrorResponse> handleConflict(AliasConflictException ex) {
         return ResponseEntity.status(HttpStatus.CONFLICT)

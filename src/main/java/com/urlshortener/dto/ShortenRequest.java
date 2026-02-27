@@ -1,5 +1,7 @@
 package com.urlshortener.dto;
 
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -12,5 +14,10 @@ public record ShortenRequest(
 
         @Pattern(regexp = "^[a-zA-Z0-9_-]*$", message = "Alias may only contain letters, numbers, hyphens and underscores")
         @Size(min = 3, max = 20, message = "Alias must be between 3 and 20 characters")
-        String alias
+        String alias,
+
+        // null = never expires; otherwise days until expiry (1–365)
+        @Min(value = 1, message = "Expiry must be at least 1 day")
+        @Max(value = 365, message = "Expiry cannot exceed 365 days")
+        Integer expiryDays
 ) {}

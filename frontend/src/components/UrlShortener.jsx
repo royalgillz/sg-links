@@ -1,7 +1,8 @@
 import ThreeBackground from './ThreeBackground'
 
 export default function UrlShortener({
-  url, setUrl, alias, setAlias, result, stats, error, loading, copied, handleSubmit, handleCopy,
+  url, setUrl, alias, setAlias, expiryDays, setExpiryDays,
+  result, stats, error, loading, copied, handleSubmit, handleCopy,
 }) {
   return (
     <div className="relative min-h-screen bg-gray-950 overflow-hidden flex items-center justify-center p-4">
@@ -71,7 +72,7 @@ export default function UrlShortener({
             </button>
           </div>
 
-          {/* Custom alias */}
+          {/* Custom alias + Expiry */}
           <div className="flex items-center gap-2">
             <span className="text-xs text-gray-600 shrink-0">localhost:8080/</span>
             <input
@@ -84,6 +85,20 @@ export default function UrlShortener({
                          rounded-lg px-3 py-2 text-xs backdrop-blur focus:outline-none
                          focus:border-violet-500/50 transition-all font-mono"
             />
+            <select
+              value={expiryDays}
+              onChange={e => setExpiryDays(e.target.value)}
+              className="bg-white/5 border border-white/10 text-gray-400 rounded-lg px-2 py-2
+                         text-xs backdrop-blur focus:outline-none focus:border-violet-500/50
+                         transition-all cursor-pointer"
+            >
+              <option value="">No expiry</option>
+              <option value="1">1 day</option>
+              <option value="7">7 days</option>
+              <option value="30">30 days</option>
+              <option value="90">90 days</option>
+              <option value="365">1 year</option>
+            </select>
           </div>
         </form>
 
@@ -128,6 +143,11 @@ export default function UrlShortener({
                 </a>
               </div>
               <p className="text-xs text-gray-600 mt-2 truncate">→ {result.originalUrl}</p>
+            {result.expiresAt && (
+              <p className="text-xs text-amber-600 mt-1">
+                ⏱ Expires {new Date(result.expiresAt).toLocaleDateString(undefined, { dateStyle: 'medium' })}
+              </p>
+            )}
             </div>
 
             {/* Analytics panel */}
