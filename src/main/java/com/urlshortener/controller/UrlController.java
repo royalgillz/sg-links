@@ -39,4 +39,10 @@ public class UrlController {
     public ResponseEntity<StatsResponse> stats(@PathVariable String code) {
         return ResponseEntity.ok(urlService.getStats(code));
     }
+
+    @DeleteMapping("/api/urls/{code}")
+    public ResponseEntity<Void> delete(@PathVariable String code) {
+        urlService.delete(code);
+        return ResponseEntity.noContent().build();
+    }
 }

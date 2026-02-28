@@ -113,6 +113,13 @@ public class UrlService {
         );
     }
 
+    @Transactional
+    public void delete(String code) {
+        Url url = urlRepository.findByShortCode(code)
+                .orElseThrow(() -> new UrlNotFoundException(code));
+        urlRepository.delete(url);
+    }
+
     private String generateUniqueCode() {
         for (int attempt = 0; attempt < 10; attempt++) {
             String code = base62Encoder.generate();

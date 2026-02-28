@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import UrlShortener from './components/UrlShortener'
+import { useHistory } from './hooks/useHistory'
 
 export default function App() {
   const [url, setUrl] = useState('')
@@ -12,16 +13,22 @@ export default function App() {
   const [copied, setCopied] = useState(false)
   const intervalRef = useRef(null)
 
+  const { history, addEntry, removeEntry, updateStats } = useHistory()
+
   async function fetchStats(code) {
     try {
       const res = await fetch(`/api/urls/${code}/stats`)
-      if (res.ok) setStats(await res.json())
+      if (res.ok) {
+        const data = await res.json()
+        updateStats(code, data)
+        if (result?.shortCode === code) setStats(data)
+      }
     } catch {
       // non-critical
     }
   }
 
-  // Auto-refresh every 5 s while a result is visible
+  // Auto-refresh current result stats every 5s
   useEffect(() => {
     if (!result) return
     intervalRef.current = setInterval(() => fetchStats(result.shortCode), 5000)
@@ -46,12 +53,26 @@ export default function App() {
         setError(data.error ?? 'Something went wrong.')
       } else {
         setResult(data)
+        addEntry(data)
         fetchStats(data.shortCode)
       }
     } catch {
       setError('Network error. Is the backend running?')
     } finally {
       setLoading(false)
+    }
+  }
+
+  async function handleDelete(shortCode) {
+    try {
+      await fetch(`/api/urls/${shortCode}`, { method: 'DELETE' })
+    } catch {
+      // best-effort
+    }
+    removeEntry(shortCode)
+    if (result?.shortCode === shortCode) {
+      setResult(null)
+      setStats(null)
     }
   }
 
@@ -76,6 +97,9 @@ export default function App() {
       copied={copied}
       handleSubmit={handleSubmit}
       handleCopy={handleCopy}
+      history={history}
+      onDelete={handleDelete}
+      onRefreshStats={fetchStats}
     />
   )
 }

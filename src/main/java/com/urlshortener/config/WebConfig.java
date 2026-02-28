@@ -14,8 +14,9 @@ public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         // Rate limit only the shorten endpoint — not redirects or stats
+        // Rate limit shorten (POST /api/urls) and stats (GET /api/urls/{code}/stats)
+        // but not delete — that's user-initiated cleanup
         registry.addInterceptor(rateLimitInterceptor)
-                .addPathPatterns("/api/urls")
-                .addPathPatterns("/api/urls/**");
+                .addPathPatterns("/api/urls", "/api/urls/*/stats");
     }
 }

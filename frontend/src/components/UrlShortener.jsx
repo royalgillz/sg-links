@@ -1,8 +1,10 @@
 import ThreeBackground from './ThreeBackground'
+import History from './History'
 
 export default function UrlShortener({
   url, setUrl, alias, setAlias, expiryDays, setExpiryDays,
   result, stats, error, loading, copied, handleSubmit, handleCopy,
+  history, onDelete, onRefreshStats,
 }) {
   return (
     <div className="relative min-h-screen bg-gray-950 overflow-hidden flex items-center justify-center p-4">
@@ -192,6 +194,13 @@ export default function UrlShortener({
             )}
           </div>
         )}
+
+        {/* History */}
+        <History
+          history={history}
+          onDelete={onDelete}
+          onRefreshStats={onRefreshStats}
+        />
 
         {/* Footer */}
         <p className="text-center text-xs text-gray-700 mt-6">
