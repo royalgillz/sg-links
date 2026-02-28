@@ -39,3 +39,6 @@ management:
 
 app:
   base-url: http://localhost:8080
+  rate-limit:
+    requests: 10       # max requests per window
+    window-seconds: 60 # rolling window duration
