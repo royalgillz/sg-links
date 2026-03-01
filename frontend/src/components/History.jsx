@@ -77,6 +77,15 @@ export default function History({ history, onDelete, onRefreshStats }) {
                 >
                   {copiedCode === entry.shortCode ? '✓' : 'Copy'}
                 </button>
+                <a
+                  href={entry.shortUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-xs px-2.5 py-1.5 rounded-lg bg-violet-900/30 hover:bg-violet-900/50
+                             text-violet-400 transition-colors"
+                >
+                  Open
+                </a>
                 <button
                   onClick={() => onDelete(entry.shortCode)}
                   className="text-xs px-2.5 py-1.5 rounded-lg bg-red-950/30 hover:bg-red-950/60
