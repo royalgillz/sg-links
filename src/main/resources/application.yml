@@ -3,9 +3,10 @@ spring:
     name: url-shortener
 
   datasource:
-    url: jdbc:postgresql://localhost:5432/urlshortener
-    username: postgres
-    password: postgres
+    # Railway injects PGHOST, PGPORT, PGDATABASE, PGUSER, PGPASSWORD
+    url: jdbc:postgresql://${PGHOST:localhost}:${PGPORT:5432}/${PGDATABASE:urlshortener}
+    username: ${PGUSER:postgres}
+    password: ${PGPASSWORD:postgres}
     driver-class-name: org.postgresql.Driver
 
   jpa:
@@ -22,11 +23,11 @@ spring:
 
   data:
     redis:
-      host: localhost
-      port: 6379
+      # Railway injects REDIS_URL as redis://:password@host:port
+      url: ${REDIS_URL:redis://localhost:6379}
 
 server:
-  port: 8080
+  port: ${PORT:8080}
 
 management:
   endpoints:
@@ -38,7 +39,8 @@ management:
       show-details: always
 
 app:
-  base-url: http://localhost:8080
+  # Set APP_BASE_URL to your Railway domain, e.g. https://your-app.up.railway.app
+  base-url: ${APP_BASE_URL:http://localhost:8080}
   rate-limit:
-    requests: 10       # max requests per window
-    window-seconds: 60 # rolling window duration
+    requests: 10
+    window-seconds: 60
