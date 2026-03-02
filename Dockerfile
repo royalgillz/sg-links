@@ -1,23 +1,30 @@
-# ---- Build stage ----
+# ---- Stage 1: Build React frontend ----
+FROM node:22-alpine AS frontend
+WORKDIR /frontend
+COPY frontend/package*.json ./
+RUN npm ci --silent
+COPY frontend/ .
+# Build into /static so we can easily copy it out
+RUN npx vite build --outDir /static --emptyOutDir
+
+# ---- Stage 2: Build Spring Boot JAR ----
 FROM maven:3.9.6-eclipse-temurin-17 AS build
 WORKDIR /app
 
-# Copy pom and wrapper first so dependency layer is cached
 COPY pom.xml .
 COPY .mvn/ .mvn/
 RUN mvn dependency:go-offline -q 2>/dev/null || true
 
-# Copy source + frontend (frontend-maven-plugin downloads its own Node at build time)
 COPY src/ src/
-COPY frontend/ frontend/
+# Inject pre-built frontend assets so Spring Boot serves them as static files
+COPY --from=frontend /static/ src/main/resources/static/
 
-RUN mvn package -DskipTests -q
+# Skip frontend-maven-plugin — already done in stage 1
+RUN mvn package -DskipTests -DskipFrontend=true -q
 
-# ---- Run stage ----
+# ---- Stage 3: Run ----
 FROM eclipse-temurin:17-jre-alpine
 WORKDIR /app
-
 COPY --from=build /app/target/*.jar app.jar
-
 EXPOSE 8080
 ENTRYPOINT ["java", "-jar", "app.jar"]

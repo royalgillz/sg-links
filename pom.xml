@@ -97,6 +97,7 @@
           <workingDirectory>frontend</workingDirectory>
           <nodeVersion>v22.14.0</nodeVersion>
           <npmVersion>10.9.2</npmVersion>
+          <skip>${skipFrontend}</skip>
         </configuration>
         <executions>
           <execution>
