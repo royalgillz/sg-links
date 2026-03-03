@@ -10,6 +10,7 @@ import org.hibernate.validator.constraints.URL;
 public record ShortenRequest(
         @NotBlank(message = "URL must not be blank")
         @URL(message = "Must be a valid URL")
+        @Pattern(regexp = "^https?://.*", message = "Only http and https URLs are allowed")
         String url,
 
         @Pattern(regexp = "^[a-zA-Z0-9_-]*$", message = "Alias may only contain letters, numbers, hyphens and underscores")
