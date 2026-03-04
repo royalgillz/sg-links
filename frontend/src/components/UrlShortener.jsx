@@ -1,6 +1,7 @@
 import ThreeBackground from './ThreeBackground'
 import History from './History'
 import QrCode from './QrCode'
+import ClickChart from './ClickChart'
 
 export default function UrlShortener({
   url, setUrl, alias, setAlias, expiryDays, setExpiryDays,
@@ -170,6 +171,8 @@ export default function UrlShortener({
                     </span>
                   </div>
                 </div>
+
+                <ClickChart clicksByDay={stats.clicksByDay} />
 
                 {stats.recentClicks.length > 0 ? (
                   <ul className="space-y-1.5 max-h-36 overflow-y-auto

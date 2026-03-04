@@ -1,6 +1,7 @@
 package com.urlshortener.service;
 
 import com.urlshortener.dto.ClickRecord;
+import com.urlshortener.dto.DailyClickCount;
 import com.urlshortener.dto.ShortenRequest;
 import com.urlshortener.dto.ShortenResponse;
 import com.urlshortener.dto.StatsResponse;
@@ -103,12 +104,19 @@ public class UrlService {
                 .map(c -> new ClickRecord(c.getClickedAt(), c.getReferrer()))
                 .toList();
 
+        List<DailyClickCount> clicksByDay = clickRepository
+                .clicksPerDayLast30(url.getId())
+                .stream()
+                .map(row -> new DailyClickCount((String) row[0], ((Number) row[1]).longValue()))
+                .toList();
+
         return new StatsResponse(
                 code,
                 baseUrl + "/" + code,
                 url.getOriginalUrl(),
                 url.getClickCount(),
                 recent,
+                clicksByDay,
                 url.getExpiresAt()
         );
     }

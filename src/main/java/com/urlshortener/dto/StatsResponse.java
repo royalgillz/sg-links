@@ -9,5 +9,6 @@ public record StatsResponse(
         String originalUrl,
         long totalClicks,
         List<ClickRecord> recentClicks,
+        List<DailyClickCount> clicksByDay,
         OffsetDateTime expiresAt
 ) {}
