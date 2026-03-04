@@ -1,5 +1,6 @@
 import ThreeBackground from './ThreeBackground'
 import History from './History'
+import QrCode from './QrCode'
 
 export default function UrlShortener({
   url, setUrl, alias, setAlias, expiryDays, setExpiryDays,
@@ -151,6 +152,9 @@ export default function UrlShortener({
               </p>
             )}
             </div>
+
+            {/* QR Code */}
+            <QrCode url={result.shortUrl} />
 
             {/* Analytics panel */}
             {stats && (
