@@ -5,9 +5,13 @@ import com.urlshortener.dto.DailyClickCount;
 import com.urlshortener.dto.ShortenRequest;
 import com.urlshortener.dto.ShortenResponse;
 import com.urlshortener.dto.StatsResponse;
+import com.urlshortener.dto.UnlockRequest;
+import com.urlshortener.dto.UnlockResponse;
 import com.urlshortener.exception.AliasConflictException;
+import com.urlshortener.exception.InvalidPasswordException;
 import com.urlshortener.exception.UrlExpiredException;
 import com.urlshortener.exception.UrlNotFoundException;
+import com.urlshortener.exception.UrlPasswordRequiredException;
 import com.urlshortener.model.Click;
 import com.urlshortener.model.Url;
 import com.urlshortener.repository.ClickRepository;
@@ -16,6 +20,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,6 +36,7 @@ public class UrlService {
     private final ClickRepository clickRepository;
     private final Base62Encoder base62Encoder;
     private final BloomFilterService bloomFilterService;
+    private final BCryptPasswordEncoder passwordEncoder;
 
     @Value("${app.base-url}")
     private String baseUrl;
@@ -57,6 +63,9 @@ public class UrlService {
         url.setShortCode(code);
         url.setOriginalUrl(request.url());
         url.setExpiresAt(expiresAt);
+        if (request.password() != null && !request.password().isBlank()) {
+            url.setPasswordHash(passwordEncoder.encode(request.password()));
+        }
 
         try {
             urlRepository.saveAndFlush(url);
@@ -79,6 +88,10 @@ public class UrlService {
 
         if (url.getExpiresAt() != null && url.getExpiresAt().isBefore(OffsetDateTime.now(ZoneOffset.UTC))) {
             throw new UrlExpiredException(code);
+        }
+
+        if (url.getPasswordHash() != null) {
+            throw new UrlPasswordRequiredException(code);
         }
 
         Click click = new Click();
@@ -119,6 +132,16 @@ public class UrlService {
                 clicksByDay,
                 url.getExpiresAt()
         );
+    }
+
+    @Transactional(readOnly = true)
+    public UnlockResponse unlock(String code, UnlockRequest request) {
+        Url url = urlRepository.findByShortCode(code)
+                .orElseThrow(() -> new UrlNotFoundException(code));
+        if (url.getPasswordHash() == null || !passwordEncoder.matches(request.password(), url.getPasswordHash())) {
+            throw new InvalidPasswordException();
+        }
+        return new UnlockResponse(url.getOriginalUrl());
     }
 
     @Transactional

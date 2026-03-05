@@ -17,6 +17,6 @@ public class WebConfig implements WebMvcConfigurer {
         // Rate limit shorten (POST /api/urls) and stats (GET /api/urls/{code}/stats)
         // but not delete — that's user-initiated cleanup
         registry.addInterceptor(rateLimitInterceptor)
-                .addPathPatterns("/api/urls", "/api/urls/*/stats");
+                .addPathPatterns("/api/urls", "/api/urls/*/stats", "/api/urls/*/unlock");
     }
 }

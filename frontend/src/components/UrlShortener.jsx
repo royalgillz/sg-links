@@ -4,7 +4,7 @@ import QrCode from './QrCode'
 import ClickChart from './ClickChart'
 
 export default function UrlShortener({
-  url, setUrl, alias, setAlias, expiryDays, setExpiryDays,
+  url, setUrl, alias, setAlias, expiryDays, setExpiryDays, password, setPassword,
   result, stats, error, loading, copied, handleSubmit, handleCopy,
   history, onDelete, onRefreshStats,
 }) {
@@ -104,6 +104,17 @@ export default function UrlShortener({
               <option value="365">1 year</option>
             </select>
           </div>
+
+          {/* Optional password */}
+          <input
+            type="password"
+            placeholder="🔒 Password protect  (optional)"
+            value={password}
+            onChange={e => setPassword(e.target.value)}
+            className="w-full bg-white/5 border border-white/10 text-white placeholder-gray-600
+                       rounded-lg px-3 py-2 text-xs backdrop-blur focus:outline-none
+                       focus:border-violet-500/50 transition-all"
+          />
         </form>
 
         {/* Error */}

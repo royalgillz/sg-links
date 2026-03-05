@@ -20,5 +20,8 @@ public record ShortenRequest(
         // null = never expires; otherwise days until expiry (1–365)
         @Min(value = 1, message = "Expiry must be at least 1 day")
         @Max(value = 365, message = "Expiry cannot exceed 365 days")
-        Integer expiryDays
+        Integer expiryDays,
+
+        @Size(min = 4, max = 72, message = "Password must be between 4 and 72 characters")
+        String password
 ) {}

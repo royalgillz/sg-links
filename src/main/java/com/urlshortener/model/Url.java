@@ -34,6 +34,9 @@ public class Url {
     @Column(name = "click_count", nullable = false)
     private long clickCount = 0L;
 
+    @Column(name = "password_hash", length = 72)
+    private String passwordHash;
+
     @PrePersist
     protected void onCreate() {
         createdAt = OffsetDateTime.now(ZoneOffset.UTC);

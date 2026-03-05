@@ -1,11 +1,17 @@
 import { useState, useEffect, useRef } from 'react'
 import UrlShortener from './components/UrlShortener'
+import PasswordModal from './components/PasswordModal'
 import { useHistory } from './hooks/useHistory'
 
 export default function App() {
   const [url, setUrl] = useState('')
   const [alias, setAlias] = useState('')
   const [expiryDays, setExpiryDays] = useState('')
+  const [password, setPassword] = useState('')
+
+  // Check if redirected here from a password-protected short link
+  const params = new URLSearchParams(window.location.search)
+  const [unlockCode, setUnlockCode] = useState(params.get('unlock') ?? null)
   const [result, setResult] = useState(null)
   const [stats, setStats] = useState(null)
   const [error, setError] = useState(null)
@@ -46,7 +52,7 @@ export default function App() {
       const res = await fetch('/api/urls', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ url, alias: alias.trim() || null, expiryDays: expiryDays ? Number(expiryDays) : null }),
+        body: JSON.stringify({ url, alias: alias.trim() || null, expiryDays: expiryDays ? Number(expiryDays) : null, password: password || null }),
       })
       const data = await res.json()
       if (!res.ok) {
@@ -55,6 +61,7 @@ export default function App() {
         setResult(data)
         addEntry(data)
         fetchStats(data.shortCode)
+        setPassword('')
       }
     } catch {
       setError('Network error. Is the backend running?')
@@ -83,23 +90,36 @@ export default function App() {
   }
 
   return (
-    <UrlShortener
-      url={url}
-      setUrl={setUrl}
-      alias={alias}
-      setAlias={setAlias}
-      expiryDays={expiryDays}
-      setExpiryDays={setExpiryDays}
-      result={result}
-      stats={stats}
-      error={error}
-      loading={loading}
-      copied={copied}
-      handleSubmit={handleSubmit}
-      handleCopy={handleCopy}
-      history={history}
-      onDelete={handleDelete}
-      onRefreshStats={fetchStats}
-    />
+    <>
+      {unlockCode && (
+        <PasswordModal
+          code={unlockCode}
+          onClose={() => {
+            setUnlockCode(null)
+            window.history.replaceState({}, '', '/')
+          }}
+        />
+      )}
+      <UrlShortener
+        url={url}
+        setUrl={setUrl}
+        alias={alias}
+        setAlias={setAlias}
+        expiryDays={expiryDays}
+        setExpiryDays={setExpiryDays}
+        password={password}
+        setPassword={setPassword}
+        result={result}
+        stats={stats}
+        error={error}
+        loading={loading}
+        copied={copied}
+        handleSubmit={handleSubmit}
+        handleCopy={handleCopy}
+        history={history}
+        onDelete={handleDelete}
+        onRefreshStats={fetchStats}
+      />
+    </>
   )
 }

@@ -3,6 +3,9 @@ package com.urlshortener.controller;
 import com.urlshortener.dto.ShortenRequest;
 import com.urlshortener.dto.ShortenResponse;
 import com.urlshortener.dto.StatsResponse;
+import com.urlshortener.dto.UnlockRequest;
+import com.urlshortener.dto.UnlockResponse;
+import com.urlshortener.exception.UrlPasswordRequiredException;
 import com.urlshortener.service.UrlService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -29,10 +32,23 @@ public class UrlController {
     public ResponseEntity<Void> redirect(@PathVariable String code, HttpServletRequest request) {
         String referrer = request.getHeader("Referer");
         String userAgent = request.getHeader("User-Agent");
-        String originalUrl = urlService.resolveAndTrack(code, referrer, userAgent);
-        return ResponseEntity.status(HttpStatus.FOUND)
-                .location(URI.create(originalUrl))
-                .build();
+        try {
+            String originalUrl = urlService.resolveAndTrack(code, referrer, userAgent);
+            return ResponseEntity.status(HttpStatus.FOUND)
+                    .location(URI.create(originalUrl))
+                    .build();
+        } catch (UrlPasswordRequiredException e) {
+            return ResponseEntity.status(HttpStatus.FOUND)
+                    .location(URI.create("/?unlock=" + code))
+                    .build();
+        }
+    }
+
+    @PostMapping("/api/urls/{code}/unlock")
+    public ResponseEntity<UnlockResponse> unlock(
+            @PathVariable String code,
+            @Valid @RequestBody UnlockRequest request) {
+        return ResponseEntity.ok(urlService.unlock(code, request));
     }
 
     @GetMapping("/api/urls/{code}/stats")
