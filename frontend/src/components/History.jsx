@@ -61,13 +61,43 @@ export default function History({ history, onDelete, onRefreshStats }) {
     (b.stats?.totalClicks ?? 0) - (a.stats?.totalClicks ?? 0)
   )
 
+  function handleExportCsv() {
+    const rows = [
+      ['Short URL', 'Original URL', 'Clicks', 'Expires At', 'Password Protected', 'Saved At'],
+      ...sorted.map(e => [
+        e.shortUrl,
+        e.originalUrl,
+        e.stats?.totalClicks ?? 0,
+        e.expiresAt ?? '',
+        e.passwordProtected ? 'Yes' : 'No',
+        e.savedAt,
+      ]),
+    ]
+    const csv = rows.map(r => r.map(v => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n')
+    const blob = new Blob([csv], { type: 'text/csv' })
+    const a = document.createElement('a')
+    a.href = URL.createObjectURL(blob)
+    a.download = 'links.csv'
+    a.click()
+    URL.revokeObjectURL(a.href)
+  }
+
   return (
     <div className="mt-8">
       <div className="flex items-center justify-between mb-3">
         <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-widest">
           Link History
         </h2>
-        <span className="text-xs text-gray-600">{history.length} link{history.length !== 1 ? 's' : ''}</span>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={handleExportCsv}
+            className="text-xs bg-white/5 hover:bg-white/10 border border-white/10
+                       text-gray-500 hover:text-gray-300 px-2.5 py-1 rounded-lg transition-all"
+          >
+            Export CSV
+          </button>
+          <span className="text-xs text-gray-600">{history.length} link{history.length !== 1 ? 's' : ''}</span>
+        </div>
       </div>
 
       <div className="space-y-2">
@@ -97,6 +127,9 @@ export default function History({ history, onDelete, onRefreshStats }) {
                     <span className="font-mono text-sm text-violet-400 truncate">
                       {entry.shortUrl}
                     </span>
+                    {entry.passwordProtected && (
+                      <span className="shrink-0 text-xs text-gray-500" title="Password protected">🔒</span>
+                    )}
                     {expired && (
                       <span className="shrink-0 text-xs text-red-500 bg-red-950/40 border border-red-900/40 px-1.5 py-0.5 rounded">
                         expired

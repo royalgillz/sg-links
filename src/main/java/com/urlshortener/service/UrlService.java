@@ -1,5 +1,7 @@
 package com.urlshortener.service;
 
+import com.urlshortener.dto.BulkShortenItem;
+import com.urlshortener.dto.BulkShortenRequest;
 import com.urlshortener.dto.ClickRecord;
 import com.urlshortener.dto.DailyClickCount;
 import com.urlshortener.dto.ShortenRequest;
@@ -26,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -75,7 +78,7 @@ public class UrlService {
         }
         bloomFilterService.add(code);
 
-        return new ShortenResponse(code, baseUrl + "/" + code, request.url(), expiresAt);
+        return new ShortenResponse(code, baseUrl + "/" + code, request.url(), expiresAt, url.getPasswordHash() != null);
     }
 
     @Transactional
@@ -132,6 +135,21 @@ public class UrlService {
                 clicksByDay,
                 url.getExpiresAt()
         );
+    }
+
+    @Transactional
+    public List<BulkShortenItem> bulkShorten(BulkShortenRequest request) {
+        List<BulkShortenItem> results = new ArrayList<>();
+        for (String url : request.urls()) {
+            try {
+                ShortenRequest single = new ShortenRequest(url, null, null, null);
+                ShortenResponse response = shorten(single);
+                results.add(new BulkShortenItem(url, response.shortUrl(), null));
+            } catch (Exception e) {
+                results.add(new BulkShortenItem(url, null, e.getMessage()));
+            }
+        }
+        return results;
     }
 
     @Transactional(readOnly = true)

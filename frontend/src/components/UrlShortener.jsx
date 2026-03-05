@@ -1,13 +1,17 @@
+import { useState } from 'react'
 import ThreeBackground from './ThreeBackground'
 import History from './History'
 import QrCode from './QrCode'
 import ClickChart from './ClickChart'
+import BulkShortener from './BulkShortener'
 
 export default function UrlShortener({
   url, setUrl, alias, setAlias, expiryDays, setExpiryDays, password, setPassword,
   result, stats, error, loading, copied, handleSubmit, handleCopy,
   history, onDelete, onRefreshStats,
 }) {
+  const [mode, setMode] = useState('single')
+
   return (
     <div className="relative min-h-screen bg-gray-950 overflow-hidden flex items-center justify-center p-4">
 
@@ -42,7 +46,27 @@ export default function UrlShortener({
           </p>
         </div>
 
-        {/* Form */}
+        {/* Mode tabs */}
+        <div className="flex gap-1 mb-4 bg-white/5 border border-white/10 rounded-xl p-1">
+          {['single', 'bulk'].map(m => (
+            <button
+              key={m}
+              type="button"
+              onClick={() => setMode(m)}
+              className={`flex-1 py-2 rounded-lg text-sm font-medium transition-all capitalize
+                ${mode === m
+                  ? 'bg-violet-600 text-white shadow'
+                  : 'text-gray-500 hover:text-gray-300'}`}
+            >
+              {m === 'single' ? 'Single URL' : 'Bulk'}
+            </button>
+          ))}
+        </div>
+
+        {mode === 'bulk' && <BulkShortener />}
+
+        {/* Single URL form + results */}
+        {mode === 'single' && <>
         <form onSubmit={handleSubmit} className="space-y-2">
           <div className="flex flex-col sm:flex-row gap-2">
             <input
@@ -78,7 +102,7 @@ export default function UrlShortener({
 
           {/* Custom alias + Expiry */}
           <div className="flex items-center gap-2">
-            <span className="text-xs text-gray-600 shrink-0">localhost:8080/</span>
+            <span className="text-xs text-gray-600 shrink-0">{window.location.host}/</span>
             <input
               type="text"
               placeholder="custom-alias  (optional)"
@@ -212,6 +236,8 @@ export default function UrlShortener({
             )}
           </div>
         )}
+
+        </>}
 
         {/* History */}
         <History

@@ -6,5 +6,6 @@ public record ShortenResponse(
         String shortCode,
         String shortUrl,
         String originalUrl,
-        OffsetDateTime expiresAt
+        OffsetDateTime expiresAt,
+        boolean passwordProtected
 ) {}

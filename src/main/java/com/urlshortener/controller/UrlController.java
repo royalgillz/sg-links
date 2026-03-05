@@ -1,5 +1,7 @@
 package com.urlshortener.controller;
 
+import com.urlshortener.dto.BulkShortenItem;
+import com.urlshortener.dto.BulkShortenRequest;
 import com.urlshortener.dto.ShortenRequest;
 import com.urlshortener.dto.ShortenResponse;
 import com.urlshortener.dto.StatsResponse;
@@ -15,6 +17,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -42,6 +45,11 @@ public class UrlController {
                     .location(URI.create("/?unlock=" + code))
                     .build();
         }
+    }
+
+    @PostMapping("/api/urls/bulk")
+    public ResponseEntity<List<BulkShortenItem>> bulk(@Valid @RequestBody BulkShortenRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(urlService.bulkShorten(request));
     }
 
     @PostMapping("/api/urls/{code}/unlock")
