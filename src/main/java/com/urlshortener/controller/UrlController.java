@@ -9,6 +9,8 @@ import com.urlshortener.dto.UnlockRequest;
 import com.urlshortener.dto.UnlockResponse;
 import com.urlshortener.exception.UrlPasswordRequiredException;
 import com.urlshortener.service.UrlService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -21,16 +23,25 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
+@Tag(name = "URL Shortener", description = "Shorten, redirect, and analyse URLs")
 public class UrlController {
 
     private final UrlService urlService;
 
+    @Operation(summary = "Shorten a URL")
     @PostMapping("/api/urls")
     public ResponseEntity<ShortenResponse> shorten(@Valid @RequestBody ShortenRequest request) {
         ShortenResponse response = urlService.shorten(request);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
+    @Operation(summary = "Shorten multiple URLs at once (max 20)")
+    @PostMapping("/api/urls/bulk")
+    public ResponseEntity<List<BulkShortenItem>> bulk(@Valid @RequestBody BulkShortenRequest request) {
+        return ResponseEntity.status(HttpStatus.CREATED).body(urlService.bulkShorten(request));
+    }
+
+    @Operation(summary = "Redirect to the original URL (302). Password-protected links redirect to the unlock page.")
     @GetMapping("/{code:[a-zA-Z0-9_-]+}")
     public ResponseEntity<Void> redirect(@PathVariable String code, HttpServletRequest request) {
         String referrer = request.getHeader("Referer");
@@ -47,11 +58,7 @@ public class UrlController {
         }
     }
 
-    @PostMapping("/api/urls/bulk")
-    public ResponseEntity<List<BulkShortenItem>> bulk(@Valid @RequestBody BulkShortenRequest request) {
-        return ResponseEntity.status(HttpStatus.CREATED).body(urlService.bulkShorten(request));
-    }
-
+    @Operation(summary = "Unlock a password-protected link and retrieve the original URL")
     @PostMapping("/api/urls/{code}/unlock")
     public ResponseEntity<UnlockResponse> unlock(
             @PathVariable String code,
@@ -59,11 +66,13 @@ public class UrlController {
         return ResponseEntity.ok(urlService.unlock(code, request));
     }
 
+    @Operation(summary = "Get click analytics for a short code")
     @GetMapping("/api/urls/{code}/stats")
     public ResponseEntity<StatsResponse> stats(@PathVariable String code) {
         return ResponseEntity.ok(urlService.getStats(code));
     }
 
+    @Operation(summary = "Delete a short URL")
     @DeleteMapping("/api/urls/{code}")
     public ResponseEntity<Void> delete(@PathVariable String code) {
         urlService.delete(code);
