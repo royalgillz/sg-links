@@ -209,6 +209,33 @@ export default function UrlShortener({
 
                 <ClickChart clicksByDay={stats.clicksByDay} />
 
+                {/* Browser / OS breakdown */}
+                {(stats.browserBreakdown?.length > 0 || stats.osBreakdown?.length > 0) && (
+                  <div className="flex gap-4 mt-4 border-t border-white/10 pt-4">
+                    {[{ label: 'Browsers', data: stats.browserBreakdown }, { label: 'OS', data: stats.osBreakdown }].map(({ label, data }) => (
+                      data?.length > 0 && (
+                        <div key={label} className="flex-1 min-w-0">
+                          <p className="text-xs text-gray-600 mb-1.5">{label}</p>
+                          <ul className="space-y-1">
+                            {data.map(entry => (
+                              <li key={entry.label} className="flex items-center gap-2 text-xs">
+                                <div className="flex-1 bg-white/5 rounded-full h-1.5 overflow-hidden">
+                                  <div
+                                    className="bg-violet-500/70 h-full rounded-full"
+                                    style={{ width: `${(entry.count / stats.totalClicks) * 100}%` }}
+                                  />
+                                </div>
+                                <span className="text-gray-400 shrink-0 w-16 truncate">{entry.label}</span>
+                                <span className="text-gray-600 shrink-0">{entry.count}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )
+                    ))}
+                  </div>
+                )}
+
                 {stats.recentClicks.length > 0 ? (
                   <ul className="space-y-1.5 max-h-36 overflow-y-auto
                                  [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-thumb]:rounded

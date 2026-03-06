@@ -10,5 +10,7 @@ public record StatsResponse(
         long totalClicks,
         List<ClickRecord> recentClicks,
         List<DailyClickCount> clicksByDay,
+        List<BreakdownEntry> browserBreakdown,
+        List<BreakdownEntry> osBreakdown,
         OffsetDateTime expiresAt
 ) {}

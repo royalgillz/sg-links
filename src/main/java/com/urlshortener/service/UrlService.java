@@ -1,5 +1,6 @@
 package com.urlshortener.service;
 
+import com.urlshortener.dto.BreakdownEntry;
 import com.urlshortener.dto.BulkShortenItem;
 import com.urlshortener.dto.BulkShortenRequest;
 import com.urlshortener.dto.ClickRecord;
@@ -29,7 +30,10 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -40,6 +44,7 @@ public class UrlService {
     private final Base62Encoder base62Encoder;
     private final BloomFilterService bloomFilterService;
     private final BCryptPasswordEncoder passwordEncoder;
+    private final UserAgentParser userAgentParser;
 
     @Value("${app.base-url}")
     private String baseUrl;
@@ -126,6 +131,10 @@ public class UrlService {
                 .map(row -> new DailyClickCount((String) row[0], ((Number) row[1]).longValue()))
                 .toList();
 
+        List<String> userAgents = clickRepository.findUserAgentsByUrlId(url.getId());
+        List<BreakdownEntry> browserBreakdown = toBreakdown(userAgents, userAgentParser::browser);
+        List<BreakdownEntry> osBreakdown = toBreakdown(userAgents, userAgentParser::os);
+
         return new StatsResponse(
                 code,
                 baseUrl + "/" + code,
@@ -133,6 +142,8 @@ public class UrlService {
                 url.getClickCount(),
                 recent,
                 clicksByDay,
+                browserBreakdown,
+                osBreakdown,
                 url.getExpiresAt()
         );
     }
@@ -177,6 +188,15 @@ public class UrlService {
             }
         }
         throw new IllegalStateException("Failed to generate a unique short code after 10 attempts");
+    }
+
+    private List<BreakdownEntry> toBreakdown(List<String> userAgents, java.util.function.Function<String, String> classifier) {
+        return userAgents.stream()
+                .collect(Collectors.groupingBy(classifier, Collectors.counting()))
+                .entrySet().stream()
+                .sorted(Map.Entry.<String, Long>comparingByValue(Comparator.reverseOrder()))
+                .map(e -> new BreakdownEntry(e.getKey(), e.getValue()))
+                .toList();
     }
 
     private static String truncate(String value, int max) {

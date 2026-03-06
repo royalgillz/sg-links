@@ -24,6 +24,9 @@ jobs:
       - name: Run unit tests
         run: mvn test -Dtest=Base62EncoderTest -DskipFrontend=true
 
+      - name: Run integration tests (Testcontainers)
+        run: mvn test -Dtest="UrlShortenerApplicationTests,UrlShortenerIntegrationTest" -DskipFrontend=true
+
       - name: Build JAR
         run: mvn package -DskipTests -DskipFrontend=true
 
