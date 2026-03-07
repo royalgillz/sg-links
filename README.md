@@ -1,37 +1,52 @@
 # URL Shortener
 
-A portfolio URL shortener with analytics, custom aliases, link expiry, and rate limiting. Built with Spring Boot, React, PostgreSQL, and Redis. Deployed on Railway.
+A portfolio URL shortener with analytics, built with Spring Boot, React, PostgreSQL, and Redis. Deployed on Railway.
 
 **Live:** https://url-shortener-production-sehaj.up.railway.app
+**API docs:** https://url-shortener-production-sehaj.up.railway.app/swagger-ui.html
 
 ## Features
 
-- Shorten any URL to a Base62 short code
-- Custom aliases (e.g. `/my-link`)
-- Link expiry (1 day to 1 year)
-- Click analytics — referrer and user-agent tracking
-- Rate limiting (10 requests / 60 s per IP)
-- Link history with click counts, open, copy, and delete
-- 3D animated background (Three.js)
+| Feature | Detail |
+|---|---|
+| URL shortening | Base62 short codes with Bloom filter for fast negative lookups |
+| Custom aliases | Choose your own slug (e.g. `/my-link`) |
+| Link expiry | Set a TTL of 1 day to 1 year |
+| Password protection | BCrypt-hashed password gates the redirect |
+| Bulk shorten | Shorten up to 20 URLs at once |
+| Click analytics | Per-click referrer, browser, OS, and time-series chart |
+| Preview mode | Append `+` to any short URL to inspect stats before visiting |
+| QR codes | Generated client-side with one-click PNG download |
+| Link history | localStorage-backed history with click counts, favicons, and CSV export |
+| Rate limiting | 10 requests / 60 s per IP via Redis Lua script |
+| Redis caching | Cache-aside on redirect — popular links skip the database |
+| 3D background | Three.js animated scene with mouse parallax |
 
 ## Stack
 
 | Layer | Technology |
 |---|---|
 | Backend | Java 17, Spring Boot 3.2 |
-| Frontend | React + Vite + Tailwind CSS v4 |
-| Database | PostgreSQL 16 + Flyway |
+| Frontend | React 19 + Vite + Tailwind CSS v4 |
+| Database | PostgreSQL 16 + Flyway migrations |
 | Cache / Rate limiting | Redis 7 |
 | 3D graphics | Three.js |
-| Deployment | Railway (Docker) |
+| API docs | SpringDoc OpenAPI (Swagger UI) |
+| Testing | JUnit 5 + Testcontainers |
+| CI | GitHub Actions |
+| Deployment | Railway (3-stage Docker build) |
 
 ## API
+
+Full interactive docs at `/swagger-ui.html`.
 
 | Method | Path | Description |
 |---|---|---|
 | `POST` | `/api/urls` | Shorten a URL |
-| `GET` | `/{code}` | Redirect to original URL |
-| `GET` | `/api/urls/{code}/stats` | Get click stats |
+| `POST` | `/api/urls/bulk` | Shorten up to 20 URLs |
+| `GET` | `/{code}` | Redirect (append `+` for preview) |
+| `POST` | `/api/urls/{code}/unlock` | Verify password and retrieve original URL |
+| `GET` | `/api/urls/{code}/stats` | Click analytics |
 | `DELETE` | `/api/urls/{code}` | Delete a short URL |
 
 ### Shorten request body
@@ -40,11 +55,20 @@ A portfolio URL shortener with analytics, custom aliases, link expiry, and rate 
 {
   "url": "https://example.com",
   "alias": "my-link",
-  "expiryDays": 7
+  "expiryDays": 7,
+  "password": "secret"
 }
 ```
 
-`alias` and `expiryDays` are optional.
+`alias`, `expiryDays`, and `password` are all optional.
+
+## Architecture notes
+
+- **Bloom filter** (Guava) — fast in-memory check before hitting Postgres for non-existent codes
+- **Cache-aside** — `redirect:{code}` cached in Redis with TTL matching link expiry; evicted on delete
+- **Atomic click counter** — `UPDATE urls SET click_count = click_count + 1` avoids lost updates under concurrency
+- **Rate limiter** — atomic fixed-window counter via Redis Lua script, no external library
+- **3-stage Docker build** — Node builds React → Maven injects assets → JRE runs the JAR
 
 ## Local Development
 
@@ -67,7 +91,7 @@ docker compose up -d
 ./mvnw spring-boot:run
 ```
 
-The frontend dev server (with hot reload) runs separately:
+Frontend dev server (hot reload, proxies API to port 8080):
 
 ```bash
 cd frontend
@@ -75,7 +99,17 @@ npm install
 npm run dev
 ```
 
-Frontend: http://localhost:5173 — proxies API calls to the backend on port 8080.
+Open http://localhost:5173
+
+### Run tests
+
+```bash
+# Unit tests — no infrastructure needed
+./mvnw test -Dtest=Base62EncoderTest
+
+# Integration tests — requires Docker (Testcontainers spins up Postgres + Redis)
+./mvnw test -Dtest="UrlShortenerApplicationTests,UrlShortenerIntegrationTest"
+```
 
 ### Verify health
 
@@ -83,29 +117,22 @@ Frontend: http://localhost:5173 — proxies API calls to the backend on port 808
 curl http://localhost:8080/actuator/health
 ```
 
-### Run tests
-
-```bash
-# Unit tests only (no infra needed)
-./mvnw test -Dtest=Base62EncoderTest
-```
-
 ## Deployment
 
 Deployed via Railway using a 3-stage Docker build:
 
-1. Node 22 builds the React frontend
-2. Maven injects the built assets and packages the JAR
-3. Eclipse Temurin 17 JRE runs the JAR
+1. **Node 22** — builds the React frontend
+2. **Maven** — injects the built assets and packages the Spring Boot JAR (skipping Node)
+3. **Eclipse Temurin 17 JRE** — runs the JAR
 
 Required Railway environment variables:
 
-| Variable | Example |
+| Variable | Source |
 |---|---|
-| `APP_BASE_URL` | `https://your-app.up.railway.app` |
-| `PGHOST` | injected by Railway Postgres |
-| `PGPORT` | injected by Railway Postgres |
-| `PGDATABASE` | injected by Railway Postgres |
-| `PGUSER` | injected by Railway Postgres |
-| `PGPASSWORD` | injected by Railway Postgres |
-| `REDIS_URL` | injected by Railway Redis |
+| `APP_BASE_URL` | Your Railway public URL, e.g. `https://your-app.up.railway.app` |
+| `PGHOST` | Injected by Railway Postgres plugin |
+| `PGPORT` | Injected by Railway Postgres plugin |
+| `PGDATABASE` | Injected by Railway Postgres plugin |
+| `PGUSER` | Injected by Railway Postgres plugin |
+| `PGPASSWORD` | Injected by Railway Postgres plugin |
+| `REDIS_URL` | Injected by Railway Redis plugin |
