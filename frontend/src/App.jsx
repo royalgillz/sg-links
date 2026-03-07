@@ -1,6 +1,8 @@
 import { useState, useEffect, useRef } from 'react'
 import UrlShortener from './components/UrlShortener'
 import PasswordModal from './components/PasswordModal'
+import PreviewModal from './components/PreviewModal'
+import ErrorPage from './components/ErrorPage'
 import { useHistory } from './hooks/useHistory'
 
 export default function App() {
@@ -9,9 +11,11 @@ export default function App() {
   const [expiryDays, setExpiryDays] = useState('')
   const [password, setPassword] = useState('')
 
-  // Check if redirected here from a password-protected short link
+  // Read query params set by backend redirects
   const params = new URLSearchParams(window.location.search)
   const [unlockCode, setUnlockCode] = useState(params.get('unlock') ?? null)
+  const [previewCode, setPreviewCode] = useState(params.get('preview') ?? null)
+  const [errorType, setErrorType] = useState(params.get('error') ?? null)
   const [result, setResult] = useState(null)
   const [stats, setStats] = useState(null)
   const [error, setError] = useState(null)
@@ -89,15 +93,28 @@ export default function App() {
     setTimeout(() => setCopied(false), 2000)
   }
 
+  function clearParam() {
+    window.history.replaceState({}, '', '/')
+  }
+
   return (
     <>
       {unlockCode && (
         <PasswordModal
           code={unlockCode}
-          onClose={() => {
-            setUnlockCode(null)
-            window.history.replaceState({}, '', '/')
-          }}
+          onClose={() => { setUnlockCode(null); clearParam() }}
+        />
+      )}
+      {previewCode && (
+        <PreviewModal
+          code={previewCode}
+          onClose={() => { setPreviewCode(null); clearParam() }}
+        />
+      )}
+      {errorType && (
+        <ErrorPage
+          type={errorType}
+          onClose={() => { setErrorType(null); clearParam() }}
         />
       )}
       <UrlShortener
@@ -119,6 +136,7 @@ export default function App() {
         history={history}
         onDelete={handleDelete}
         onRefreshStats={fetchStats}
+        onPreview={code => setPreviewCode(code)}
       />
     </>
   )

@@ -41,19 +41,34 @@ public class UrlController {
         return ResponseEntity.status(HttpStatus.CREATED).body(urlService.bulkShorten(request));
     }
 
-    @Operation(summary = "Redirect to the original URL (302). Password-protected links redirect to the unlock page.")
-    @GetMapping("/{code:[a-zA-Z0-9_-]+}")
-    public ResponseEntity<Void> redirect(@PathVariable String code, HttpServletRequest request) {
+    @Operation(summary = "Redirect to the original URL (302). Append + to see a preview instead. Password-protected links redirect to the unlock page.")
+    @GetMapping("/{pathVar:[a-zA-Z0-9_-]+[+]?}")
+    public ResponseEntity<Void> redirect(@PathVariable String pathVar, HttpServletRequest request) {
+        if (pathVar.endsWith("+")) {
+            String code = pathVar.substring(0, pathVar.length() - 1);
+            return ResponseEntity.status(HttpStatus.FOUND)
+                    .location(URI.create("/?preview=" + code))
+                    .build();
+        }
+
         String referrer = request.getHeader("Referer");
         String userAgent = request.getHeader("User-Agent");
         try {
-            String originalUrl = urlService.resolveAndTrack(code, referrer, userAgent);
+            String originalUrl = urlService.resolveAndTrack(pathVar, referrer, userAgent);
             return ResponseEntity.status(HttpStatus.FOUND)
                     .location(URI.create(originalUrl))
                     .build();
         } catch (UrlPasswordRequiredException e) {
             return ResponseEntity.status(HttpStatus.FOUND)
-                    .location(URI.create("/?unlock=" + code))
+                    .location(URI.create("/?unlock=" + pathVar))
+                    .build();
+        } catch (com.urlshortener.exception.UrlNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.FOUND)
+                    .location(URI.create("/?error=not-found"))
+                    .build();
+        } catch (com.urlshortener.exception.UrlExpiredException e) {
+            return ResponseEntity.status(HttpStatus.FOUND)
+                    .location(URI.create("/?error=expired"))
                     .build();
         }
     }

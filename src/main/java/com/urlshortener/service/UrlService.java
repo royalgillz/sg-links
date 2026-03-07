@@ -45,6 +45,7 @@ public class UrlService {
     private final BloomFilterService bloomFilterService;
     private final BCryptPasswordEncoder passwordEncoder;
     private final UserAgentParser userAgentParser;
+    private final UrlCacheService urlCacheService;
 
     @Value("${app.base-url}")
     private String baseUrl;
@@ -91,27 +92,45 @@ public class UrlService {
         if (!bloomFilterService.mightExist(code)) {
             throw new UrlNotFoundException(code);
         }
-        Url url = urlRepository.findByShortCode(code)
-                .orElseThrow(() -> new UrlNotFoundException(code));
 
-        if (url.getExpiresAt() != null && url.getExpiresAt().isBefore(OffsetDateTime.now(ZoneOffset.UTC))) {
-            throw new UrlExpiredException(code);
-        }
+        // Try cache first to avoid DB read on popular links
+        UrlCacheService.CachedUrl cached = urlCacheService.get(code).orElse(null);
 
-        if (url.getPasswordHash() != null) {
-            throw new UrlPasswordRequiredException(code);
+        final Long urlId;
+        final String originalUrl;
+
+        if (cached != null) {
+            if (cached.expiresAt() != null && cached.expiresAt().isBefore(OffsetDateTime.now(ZoneOffset.UTC))) {
+                urlCacheService.evict(code);
+                throw new UrlExpiredException(code);
+            }
+            urlId = cached.id();
+            originalUrl = cached.originalUrl();
+        } else {
+            Url url = urlRepository.findByShortCode(code)
+                    .orElseThrow(() -> new UrlNotFoundException(code));
+
+            if (url.getExpiresAt() != null && url.getExpiresAt().isBefore(OffsetDateTime.now(ZoneOffset.UTC))) {
+                throw new UrlExpiredException(code);
+            }
+            if (url.getPasswordHash() != null) {
+                throw new UrlPasswordRequiredException(code);
+            }
+
+            urlCacheService.put(code, url);
+            urlId = url.getId();
+            originalUrl = url.getOriginalUrl();
         }
 
         Click click = new Click();
-        click.setUrl(url);
+        click.setUrl(urlRepository.getReferenceById(urlId));
         click.setReferrer(truncate(referrer, 2048));
         click.setUserAgent(truncate(userAgent, 512));
         clickRepository.save(click);
 
-        // Atomic increment — avoids lost-update race condition under concurrent traffic
-        urlRepository.incrementClickCount(url.getId());
+        urlRepository.incrementClickCount(urlId);
 
-        return url.getOriginalUrl();
+        return originalUrl;
     }
 
     @Transactional(readOnly = true)
@@ -178,6 +197,7 @@ public class UrlService {
         Url url = urlRepository.findByShortCode(code)
                 .orElseThrow(() -> new UrlNotFoundException(code));
         urlRepository.delete(url);
+        urlCacheService.evict(code);
     }
 
     private String generateUniqueCode() {

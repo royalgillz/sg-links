@@ -8,7 +8,7 @@ import BulkShortener from './BulkShortener'
 export default function UrlShortener({
   url, setUrl, alias, setAlias, expiryDays, setExpiryDays, password, setPassword,
   result, stats, error, loading, copied, handleSubmit, handleCopy,
-  history, onDelete, onRefreshStats,
+  history, onDelete, onRefreshStats, onPreview,
 }) {
   const [mode, setMode] = useState('single')
 
@@ -271,6 +271,7 @@ export default function UrlShortener({
           history={history}
           onDelete={onDelete}
           onRefreshStats={onRefreshStats}
+          onPreview={onPreview}
         />
 
         {/* Footer */}

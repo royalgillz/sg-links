@@ -37,7 +37,7 @@ function HistoryQr({ shortUrl }) {
   )
 }
 
-export default function History({ history, onDelete, onRefreshStats }) {
+export default function History({ history, onDelete, onRefreshStats, onPreview }) {
   const [copiedCode, setCopiedCode] = useState(null)
   const [expandedQr, setExpandedQr] = useState(null)
 
@@ -113,7 +113,22 @@ export default function History({ history, onDelete, onRefreshStats }) {
                 ${expired ? 'border-red-900/40 opacity-60' : 'border-white/10'}`}
             >
               <div className="flex items-center gap-3">
-                {/* Click badge */}
+                {/* Favicon */}
+                {(() => {
+                  try {
+                    const domain = new URL(entry.originalUrl).hostname
+                    return (
+                      <img
+                        src={`https://www.google.com/s2/favicons?domain=${domain}&sz=32`}
+                        alt=""
+                        className="shrink-0 w-5 h-5 rounded"
+                        onError={e => { e.target.style.display = 'none' }}
+                      />
+                    )
+                  } catch { return null }
+                })()}
+
+              {/* Click badge */}
                 <div className="shrink-0 w-12 text-center">
                   <span className="text-lg font-bold text-violet-300 font-mono leading-none">
                     {clicks}
@@ -146,6 +161,13 @@ export default function History({ history, onDelete, onRefreshStats }) {
 
                 {/* Actions */}
                 <div className="flex items-center gap-1.5 shrink-0">
+                  <button
+                    onClick={() => onPreview(entry.shortCode)}
+                    className="text-xs px-2.5 py-1.5 rounded-lg bg-white/5 hover:bg-white/10
+                               text-gray-400 transition-colors"
+                  >
+                    Stats
+                  </button>
                   <button
                     onClick={() => toggleQr(entry.shortCode)}
                     title="Show QR code"
