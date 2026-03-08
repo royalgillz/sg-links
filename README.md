@@ -14,13 +14,15 @@ A portfolio URL shortener with analytics, built with Spring Boot, React, Postgre
 | Link expiry | Set a TTL of 1 day to 1 year |
 | Password protection | BCrypt-hashed password gates the redirect |
 | Bulk shorten | Shorten up to 20 URLs at once |
-| Click analytics | Per-click referrer, browser, OS, and time-series chart |
+| Click analytics | Per-click referrer, browser, OS breakdown, and time-series bar chart |
 | Preview mode | Append `+` to any short URL to inspect stats before visiting |
 | QR codes | Generated client-side with one-click PNG download |
 | Link history | localStorage-backed history with click counts, favicons, and CSV export |
-| Rate limiting | 10 requests / 60 s per IP via Redis Lua script |
+| Rate limiting | 10 requests / 60 s per IP via atomic Redis Lua script |
 | Redis caching | Cache-aside on redirect — popular links skip the database |
+| API keys | Generate keys to bypass rate limiting; SHA-256 hashed in DB |
 | 3D background | Three.js animated scene with mouse parallax |
+| GSD mode | Paste a URL → instant shorten; bookmarklet for one-click shortening from any page |
 
 ## Stack
 
@@ -32,8 +34,10 @@ A portfolio URL shortener with analytics, built with Spring Boot, React, Postgre
 | Cache / Rate limiting | Redis 7 |
 | 3D graphics | Three.js |
 | API docs | SpringDoc OpenAPI (Swagger UI) |
-| Testing | JUnit 5 + Testcontainers |
-| CI | GitHub Actions |
+| Metrics | Micrometer + Prometheus (`/actuator/prometheus`) |
+| Logging | Logstash JSON (production) / human-readable (local) |
+| Testing | JUnit 5 + Testcontainers + Playwright E2E |
+| CI | GitHub Actions (unit · integration · Playwright · frontend build) |
 | Deployment | Railway (3-stage Docker build) |
 
 ## API
@@ -48,6 +52,8 @@ Full interactive docs at `/swagger-ui.html`.
 | `POST` | `/api/urls/{code}/unlock` | Verify password and retrieve original URL |
 | `GET` | `/api/urls/{code}/stats` | Click analytics |
 | `DELETE` | `/api/urls/{code}` | Delete a short URL |
+| `POST` | `/api/keys` | Generate an API key |
+| `DELETE` | `/api/keys/{id}` | Revoke an API key (requires `X-API-Key` header) |
 
 ### Shorten request body
 
@@ -62,12 +68,25 @@ Full interactive docs at `/swagger-ui.html`.
 
 `alias`, `expiryDays`, and `password` are all optional.
 
+### API key usage
+
+```bash
+curl -X POST https://your-app.up.railway.app/api/urls \
+  -H "Content-Type: application/json" \
+  -H "X-API-Key: sk_your_key_here" \
+  -d '{"url": "https://example.com"}'
+```
+
+Valid API keys bypass the per-IP rate limit.
+
 ## Architecture notes
 
 - **Bloom filter** (Guava) — fast in-memory check before hitting Postgres for non-existent codes
 - **Cache-aside** — `redirect:{code}` cached in Redis with TTL matching link expiry; evicted on delete
 - **Atomic click counter** — `UPDATE urls SET click_count = click_count + 1` avoids lost updates under concurrency
 - **Rate limiter** — atomic fixed-window counter via Redis Lua script, no external library
+- **API key auth** — SHA-256 hashed keys stored in DB; interceptor runs before rate limiter so valid keys skip it
+- **Metrics** — `urls.created`, `urls.redirected` (cache_hit tag), `urls.deleted` counters exposed to Prometheus
 - **3-stage Docker build** — Node builds React → Maven injects assets → JRE runs the JAR
 
 ## Local Development
@@ -107,14 +126,20 @@ Open http://localhost:5173
 # Unit tests — no infrastructure needed
 ./mvnw test -Dtest=Base62EncoderTest
 
-# Integration tests — requires Docker (Testcontainers spins up Postgres + Redis)
+# Integration tests — Testcontainers spins up Postgres + Redis automatically
 ./mvnw test -Dtest="UrlShortenerApplicationTests,UrlShortenerIntegrationTest"
+
+# Playwright E2E — requires a built frontend
+cd frontend
+npm run build
+npx playwright test
 ```
 
-### Verify health
+### Check metrics and health
 
 ```bash
 curl http://localhost:8080/actuator/health
+curl http://localhost:8080/actuator/prometheus
 ```
 
 ## Deployment
