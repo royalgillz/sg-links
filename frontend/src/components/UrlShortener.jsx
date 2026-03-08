@@ -4,10 +4,11 @@ import History from './History'
 import QrCode from './QrCode'
 import ClickChart from './ClickChart'
 import BulkShortener from './BulkShortener'
+import ApiKeys from './ApiKeys'
 
 export default function UrlShortener({
   url, setUrl, alias, setAlias, expiryDays, setExpiryDays, password, setPassword,
-  result, stats, error, loading, copied, handleSubmit, handleCopy,
+  result, stats, error, loading, copied, handleSubmit, handleCopy, handleUrlPaste,
   history, onDelete, onRefreshStats, onPreview,
 }) {
   const [mode, setMode] = useState('single')
@@ -75,6 +76,7 @@ export default function UrlShortener({
               placeholder="https://your-long-url.com/goes/here"
               value={url}
               onChange={e => setUrl(e.target.value)}
+              onPaste={handleUrlPaste}
               className="flex-1 bg-white/5 border border-white/10 text-white placeholder-gray-500
                          rounded-xl px-4 py-3.5 text-sm backdrop-blur focus:outline-none
                          focus:border-violet-500 focus:ring-1 focus:ring-violet-500/50 transition-all"
@@ -105,7 +107,7 @@ export default function UrlShortener({
             <span className="text-xs text-gray-600 shrink-0">{window.location.host}/</span>
             <input
               type="text"
-              placeholder="custom-alias  (optional)"
+              placeholder="custom-alias (optional)"
               value={alias}
               onChange={e => setAlias(e.target.value)}
               maxLength={20}
@@ -274,8 +276,25 @@ export default function UrlShortener({
           onPreview={onPreview}
         />
 
+        {/* API Keys */}
+        <ApiKeys />
+
+        {/* GSD Bookmarklet */}
+        <div className="mt-6 border border-white/5 rounded-xl px-4 py-3 flex items-center gap-3">
+          <span className="text-xs text-gray-600 shrink-0">⚡ GSD:</span>
+          <a
+            href={`javascript:(function(){window.open('${window.location.origin}/?url='+encodeURIComponent(location.href),'_blank','noopener')})()`}
+            onClick={e => { e.preventDefault(); alert('Drag this link to your bookmarks bar — then click it on any page to instantly shorten the URL.') }}
+            className="text-xs text-violet-400 hover:text-violet-300 underline underline-offset-2 cursor-grab transition-colors"
+            title="Drag to bookmarks bar"
+          >
+            Shorten this page ↗
+          </a>
+          <span className="text-xs text-gray-700">← drag to bookmarks bar</span>
+        </div>
+
         {/* Footer */}
-        <p className="text-center text-xs text-gray-700 mt-6">
+        <p className="text-center text-xs text-gray-700 mt-4">
           Built with Spring Boot · Redis · PostgreSQL · React
         </p>
 

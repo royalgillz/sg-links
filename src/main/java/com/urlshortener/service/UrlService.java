@@ -19,6 +19,7 @@ import com.urlshortener.model.Click;
 import com.urlshortener.model.Url;
 import com.urlshortener.repository.ClickRepository;
 import com.urlshortener.repository.UrlRepository;
+import io.micrometer.core.instrument.MeterRegistry;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
@@ -46,6 +47,7 @@ public class UrlService {
     private final BCryptPasswordEncoder passwordEncoder;
     private final UserAgentParser userAgentParser;
     private final UrlCacheService urlCacheService;
+    private final MeterRegistry meterRegistry;
 
     @Value("${app.base-url}")
     private String baseUrl;
@@ -83,6 +85,11 @@ public class UrlService {
             throw new AliasConflictException(code);
         }
         bloomFilterService.add(code);
+
+        meterRegistry.counter("urls.created",
+                "alias", request.alias() != null && !request.alias().isBlank() ? "true" : "false",
+                "password", url.getPasswordHash() != null ? "true" : "false"
+        ).increment();
 
         return new ShortenResponse(code, baseUrl + "/" + code, request.url(), expiresAt, url.getPasswordHash() != null);
     }
@@ -129,6 +136,10 @@ public class UrlService {
         clickRepository.save(click);
 
         urlRepository.incrementClickCount(urlId);
+
+        meterRegistry.counter("urls.redirected",
+                "cache_hit", cached != null ? "true" : "false"
+        ).increment();
 
         return originalUrl;
     }
@@ -198,6 +209,7 @@ public class UrlService {
                 .orElseThrow(() -> new UrlNotFoundException(code));
         urlRepository.delete(url);
         urlCacheService.evict(code);
+        meterRegistry.counter("urls.deleted").increment();
     }
 
     private String generateUniqueCode() {

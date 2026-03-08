@@ -22,6 +22,10 @@ public class RateLimitInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
             throws Exception {
 
+        if (Boolean.TRUE.equals(request.getAttribute("apiKeyAuthenticated"))) {
+            return true; // API key holders bypass rate limiting
+        }
+
         String ip = resolveClientIp(request);
         long retryAfter = rateLimiterService.check(ip);
 

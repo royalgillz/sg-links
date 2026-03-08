@@ -11,11 +11,12 @@ export default function App() {
   const [expiryDays, setExpiryDays] = useState('')
   const [password, setPassword] = useState('')
 
-  // Read query params set by backend redirects
+  // Read query params set by backend redirects or bookmarklet
   const params = new URLSearchParams(window.location.search)
   const [unlockCode, setUnlockCode] = useState(params.get('unlock') ?? null)
   const [previewCode, setPreviewCode] = useState(params.get('preview') ?? null)
   const [errorType, setErrorType] = useState(params.get('error') ?? null)
+  const bookmarkletUrl = params.get('url') ?? null
   const [result, setResult] = useState(null)
   const [stats, setStats] = useState(null)
   const [error, setError] = useState(null)
@@ -45,8 +46,7 @@ export default function App() {
     return () => clearInterval(intervalRef.current)
   }, [result])
 
-  async function handleSubmit(e) {
-    e.preventDefault()
+  async function shortenUrl(targetUrl) {
     setLoading(true)
     setError(null)
     setResult(null)
@@ -56,7 +56,7 @@ export default function App() {
       const res = await fetch('/api/urls', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ url, alias: alias.trim() || null, expiryDays: expiryDays ? Number(expiryDays) : null, password: password || null }),
+        body: JSON.stringify({ url: targetUrl, alias: alias.trim() || null, expiryDays: expiryDays ? Number(expiryDays) : null, password: password || null }),
       })
       const data = await res.json()
       if (!res.ok) {
@@ -71,6 +71,30 @@ export default function App() {
       setError('Network error. Is the backend running?')
     } finally {
       setLoading(false)
+    }
+  }
+
+  // GSD: auto-shorten when arriving via bookmarklet (?url=...)
+  useEffect(() => {
+    if (bookmarkletUrl) {
+      setUrl(bookmarkletUrl)
+      window.history.replaceState({}, '', '/')
+      shortenUrl(bookmarkletUrl)
+    }
+  }, [])
+
+  async function handleSubmit(e) {
+    e.preventDefault()
+    await shortenUrl(url)
+  }
+
+  // GSD: auto-shorten on paste into the URL field
+  function handleUrlPaste(e) {
+    const pasted = e.clipboardData.getData('text').trim()
+    if (/^https?:\/\/.+/.test(pasted)) {
+      e.preventDefault()
+      setUrl(pasted)
+      setTimeout(() => shortenUrl(pasted), 0)
     }
   }
 
@@ -133,6 +157,7 @@ export default function App() {
         copied={copied}
         handleSubmit={handleSubmit}
         handleCopy={handleCopy}
+        handleUrlPaste={handleUrlPaste}
         history={history}
         onDelete={handleDelete}
         onRefreshStats={fetchStats}

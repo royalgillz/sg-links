@@ -72,6 +72,19 @@
       <version>2.4.0</version>
     </dependency>
 
+    <!-- Prometheus metrics -->
+    <dependency>
+      <groupId>io.micrometer</groupId>
+      <artifactId>micrometer-registry-prometheus</artifactId>
+    </dependency>
+
+    <!-- Structured JSON logging -->
+    <dependency>
+      <groupId>net.logstash.logback</groupId>
+      <artifactId>logstash-logback-encoder</artifactId>
+      <version>7.4</version>
+    </dependency>
+
     <!-- Jackson JSR-310 for OffsetDateTime in Redis cache -->
     <dependency>
       <groupId>com.fasterxml.jackson.datatype</groupId>
