@@ -5,6 +5,8 @@ A portfolio URL shortener with analytics, built with Spring Boot, React, Postgre
 **Live:** https://url-shortener-production-sehaj.up.railway.app
 **API docs:** https://url-shortener-production-sehaj.up.railway.app/swagger-ui.html
 
+[![App screenshot](docs/screenshot.png)](https://url-shortener-production-sehaj.up.railway.app)
+
 ## Features
 
 | Feature | Detail |
