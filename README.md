@@ -16,10 +16,12 @@ A portfolio URL shortener with analytics, built with Spring Boot, React, Postgre
 | Link expiry | Set a TTL of 1 day to 1 year |
 | Password protection | BCrypt-hashed password gates the redirect |
 | Bulk shorten | Shorten up to 20 URLs at once |
-| Click analytics | Per-click referrer, browser, OS breakdown, and time-series bar chart |
+| Click analytics | Per-click referrer, browser, OS, and country breakdown with time-series chart |
+| Country tracking | Async IP → country lookup via ip-api.com; shown in analytics modal |
+| Link editing | Update the destination URL of any existing short link |
 | Preview mode | Append `+` to any short URL to inspect stats before visiting |
 | QR codes | Generated client-side with one-click PNG download |
-| Link history | localStorage-backed history with click counts, favicons, and CSV export |
+| Link history | localStorage-backed history with click counts, favicons, and CSV export; mobile-friendly |
 | Rate limiting | 10 requests / 60 s per IP via atomic Redis Lua script |
 | Redis caching | Cache-aside on redirect — popular links skip the database |
 | API keys | Generate keys to bypass rate limiting; SHA-256 hashed in DB |
@@ -53,6 +55,7 @@ Full interactive docs at `/swagger-ui.html`.
 | `GET` | `/{code}` | Redirect (append `+` for preview) |
 | `POST` | `/api/urls/{code}/unlock` | Verify password and retrieve original URL |
 | `GET` | `/api/urls/{code}/stats` | Click analytics |
+| `PATCH` | `/api/urls/{code}` | Update the destination URL |
 | `DELETE` | `/api/urls/{code}` | Delete a short URL |
 | `POST` | `/api/keys` | Generate an API key |
 | `DELETE` | `/api/keys/{id}` | Revoke an API key (requires `X-API-Key` header) |

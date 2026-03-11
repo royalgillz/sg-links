@@ -1,6 +1,11 @@
 import { useEffect, useState } from 'react'
 import ClickChart from './ClickChart'
 
+function countryFlag(code) {
+  if (!code || code.length !== 2) return '🌐'
+  return String.fromCodePoint(...[...code.toUpperCase()].map(c => 0x1F1E6 + c.charCodeAt(0) - 65))
+}
+
 function BreakdownBar({ label, count, total }) {
   return (
     <li className="flex items-center gap-2 text-xs">
@@ -89,6 +94,29 @@ export default function PreviewModal({ code, onClose }) {
                     </div>
                   )
                 )}
+              </div>
+            )}
+
+            {/* Country breakdown */}
+            {stats.countryBreakdown?.length > 0 && (
+              <div>
+                <p className="text-xs text-gray-600 uppercase tracking-widest mb-2">Countries</p>
+                <ul className="space-y-1.5">
+                  {stats.countryBreakdown.map(e => (
+                    <li key={e.label} className="flex items-center gap-2 text-xs">
+                      <div className="flex-1 bg-white/5 rounded-full h-1.5 overflow-hidden">
+                        <div
+                          className="bg-fuchsia-500/60 h-full rounded-full"
+                          style={{ width: `${(e.count / stats.totalClicks) * 100}%` }}
+                        />
+                      </div>
+                      <span className="text-gray-400 shrink-0 w-20 truncate">
+                        {countryFlag(e.label)} {e.label}
+                      </span>
+                      <span className="text-gray-600 shrink-0">{e.count}</span>
+                    </li>
+                  ))}
+                </ul>
               </div>
             )}
 

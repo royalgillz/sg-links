@@ -37,9 +37,12 @@ function HistoryQr({ shortUrl }) {
   )
 }
 
-export default function History({ history, onDelete, onRefreshStats, onPreview }) {
+export default function History({ history, onDelete, onEdit, onRefreshStats, onPreview }) {
   const [copiedCode, setCopiedCode] = useState(null)
   const [expandedQr, setExpandedQr] = useState(null)
+  const [editingCode, setEditingCode] = useState(null)
+  const [editUrl, setEditUrl] = useState('')
+  const [editSaving, setEditSaving] = useState(false)
 
   useEffect(() => {
     history.forEach(h => onRefreshStats(h.shortCode))
@@ -53,6 +56,20 @@ export default function History({ history, onDelete, onRefreshStats, onPreview }
 
   function toggleQr(shortCode) {
     setExpandedQr(prev => prev === shortCode ? null : shortCode)
+  }
+
+  function startEdit(entry) {
+    setEditingCode(entry.shortCode)
+    setEditUrl(entry.originalUrl)
+    setExpandedQr(null)
+  }
+
+  async function saveEdit(shortCode) {
+    if (!editUrl.trim()) return
+    setEditSaving(true)
+    await onEdit(shortCode, editUrl.trim())
+    setEditSaving(false)
+    setEditingCode(null)
   }
 
   if (history.length === 0) return null
@@ -105,6 +122,7 @@ export default function History({ history, onDelete, onRefreshStats, onPreview }
           const expired = entry.expiresAt && new Date(entry.expiresAt) < new Date()
           const clicks = entry.stats?.totalClicks ?? '—'
           const qrOpen = expandedQr === entry.shortCode
+          const isEditing = editingCode === entry.shortCode
 
           return (
             <div
@@ -112,34 +130,35 @@ export default function History({ history, onDelete, onRefreshStats, onPreview }
               className={`bg-white/5 border rounded-xl px-4 py-3
                 ${expired ? 'border-red-900/40 opacity-60' : 'border-white/10'}`}
             >
-              <div className="flex items-center gap-3">
-                {/* Favicon */}
-                {(() => {
-                  try {
-                    const domain = new URL(entry.originalUrl).hostname
-                    return (
-                      <img
-                        src={`https://www.google.com/s2/favicons?domain=${domain}&sz=32`}
-                        alt=""
-                        className="shrink-0 w-5 h-5 rounded"
-                        onError={e => { e.target.style.display = 'none' }}
-                      />
-                    )
-                  } catch { return null }
-                })()}
-
-              {/* Click badge */}
-                <div className="shrink-0 w-12 text-center">
-                  <span className="text-lg font-bold text-violet-300 font-mono leading-none">
-                    {clicks}
-                  </span>
-                  <p className="text-xs text-gray-600 leading-none mt-0.5">clicks</p>
+              <div className="flex items-start gap-3">
+                {/* Favicon + click badge */}
+                <div className="flex items-center gap-3 shrink-0 pt-0.5">
+                  {(() => {
+                    try {
+                      const domain = new URL(entry.originalUrl).hostname
+                      return (
+                        <img
+                          src={`https://www.google.com/s2/favicons?domain=${domain}&sz=32`}
+                          alt=""
+                          className="w-5 h-5 rounded"
+                          onError={e => { e.target.style.display = 'none' }}
+                        />
+                      )
+                    } catch { return null }
+                  })()}
+                  <div className="w-10 text-center">
+                    <span className="text-lg font-bold text-violet-300 font-mono leading-none">
+                      {clicks}
+                    </span>
+                    <p className="text-xs text-gray-600 leading-none mt-0.5">clicks</p>
+                  </div>
                 </div>
 
-                {/* URLs */}
+                {/* Right side: URL info + actions */}
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2">
-                    <span className="font-mono text-sm text-violet-400 truncate">
+                  {/* URL row */}
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="font-mono text-sm text-violet-400 truncate max-w-full">
                       {entry.shortUrl}
                     </span>
                     {entry.passwordProtected && (
@@ -156,52 +175,92 @@ export default function History({ history, onDelete, onRefreshStats, onPreview }
                       </span>
                     )}
                   </div>
-                  <p className="text-xs text-gray-600 truncate mt-0.5">{entry.originalUrl}</p>
-                </div>
 
-                {/* Actions */}
-                <div className="flex items-center gap-1.5 shrink-0">
-                  <button
-                    onClick={() => onPreview(entry.shortCode)}
-                    className="text-xs px-2.5 py-1.5 rounded-lg bg-white/5 hover:bg-white/10
-                               text-gray-400 transition-colors"
-                  >
-                    Stats
-                  </button>
-                  <button
-                    onClick={() => toggleQr(entry.shortCode)}
-                    title="Show QR code"
-                    className={`text-xs px-2.5 py-1.5 rounded-lg transition-colors
-                      ${qrOpen
-                        ? 'bg-violet-700/40 text-violet-300 border border-violet-600/40'
-                        : 'bg-white/5 hover:bg-white/10 text-gray-400'}`}
-                  >
-                    QR
-                  </button>
-                  <button
-                    onClick={() => handleCopy(entry.shortUrl, entry.shortCode)}
-                    className="text-xs px-2.5 py-1.5 rounded-lg bg-white/5 hover:bg-white/10
-                               text-gray-400 transition-colors"
-                  >
-                    {copiedCode === entry.shortCode ? '✓' : 'Copy'}
-                  </button>
-                  <a
-                    href={entry.shortUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-xs px-2.5 py-1.5 rounded-lg bg-violet-900/30 hover:bg-violet-900/50
-                               text-violet-400 transition-colors"
-                  >
-                    Open
-                  </a>
-                  <button
-                    onClick={() => onDelete(entry.shortCode)}
-                    className="text-xs px-2.5 py-1.5 rounded-lg bg-red-950/30 hover:bg-red-950/60
-                               text-red-500 transition-colors"
-                    title="Delete link"
-                  >
-                    ✕
-                  </button>
+                  {/* Destination URL or inline edit */}
+                  {isEditing ? (
+                    <div className="flex items-center gap-2 mt-1.5">
+                      <input
+                        type="url"
+                        value={editUrl}
+                        onChange={e => setEditUrl(e.target.value)}
+                        onKeyDown={e => { if (e.key === 'Enter') saveEdit(entry.shortCode); if (e.key === 'Escape') setEditingCode(null) }}
+                        autoFocus
+                        className="flex-1 min-w-0 bg-white/5 border border-violet-500/50 text-white
+                                   rounded-lg px-2.5 py-1.5 text-xs focus:outline-none focus:ring-1
+                                   focus:ring-violet-500/50 font-mono"
+                      />
+                      <button
+                        onClick={() => saveEdit(entry.shortCode)}
+                        disabled={editSaving}
+                        className="text-xs px-2.5 py-1.5 rounded-lg bg-violet-600/50 hover:bg-violet-600/70
+                                   text-violet-200 transition-colors shrink-0 disabled:opacity-50"
+                      >
+                        {editSaving ? '…' : 'Save'}
+                      </button>
+                      <button
+                        onClick={() => setEditingCode(null)}
+                        className="text-xs px-2 py-1.5 rounded-lg bg-white/5 hover:bg-white/10
+                                   text-gray-500 transition-colors shrink-0"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  ) : (
+                    <p className="text-xs text-gray-600 truncate mt-0.5">{entry.originalUrl}</p>
+                  )}
+
+                  {/* Action buttons */}
+                  <div className="flex items-center gap-1.5 mt-2 flex-wrap">
+                    <button
+                      onClick={() => onPreview(entry.shortCode)}
+                      className="text-xs px-2.5 py-1.5 rounded-lg bg-white/5 hover:bg-white/10
+                                 text-gray-400 transition-colors"
+                    >
+                      Stats
+                    </button>
+                    <button
+                      onClick={() => startEdit(entry)}
+                      className={`text-xs px-2.5 py-1.5 rounded-lg transition-colors
+                        ${isEditing
+                          ? 'bg-violet-700/40 text-violet-300 border border-violet-600/40'
+                          : 'bg-white/5 hover:bg-white/10 text-gray-400'}`}
+                    >
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => toggleQr(entry.shortCode)}
+                      className={`text-xs px-2.5 py-1.5 rounded-lg transition-colors
+                        ${qrOpen
+                          ? 'bg-violet-700/40 text-violet-300 border border-violet-600/40'
+                          : 'bg-white/5 hover:bg-white/10 text-gray-400'}`}
+                    >
+                      QR
+                    </button>
+                    <button
+                      onClick={() => handleCopy(entry.shortUrl, entry.shortCode)}
+                      className="text-xs px-2.5 py-1.5 rounded-lg bg-white/5 hover:bg-white/10
+                                 text-gray-400 transition-colors"
+                    >
+                      {copiedCode === entry.shortCode ? '✓' : 'Copy'}
+                    </button>
+                    <a
+                      href={entry.shortUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-xs px-2.5 py-1.5 rounded-lg bg-violet-900/30 hover:bg-violet-900/50
+                                 text-violet-400 transition-colors"
+                    >
+                      Open
+                    </a>
+                    <button
+                      onClick={() => onDelete(entry.shortCode)}
+                      className="text-xs px-2.5 py-1.5 rounded-lg bg-red-950/30 hover:bg-red-950/60
+                                 text-red-500 transition-colors"
+                      title="Delete link"
+                    >
+                      ✕
+                    </button>
+                  </div>
                 </div>
               </div>
 

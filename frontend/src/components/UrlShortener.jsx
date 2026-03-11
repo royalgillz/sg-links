@@ -9,7 +9,7 @@ import ApiKeys from './ApiKeys'
 export default function UrlShortener({
   url, setUrl, alias, setAlias, expiryDays, setExpiryDays, password, setPassword,
   result, stats, error, loading, copied, handleSubmit, handleCopy, handleUrlPaste,
-  history, onDelete, onRefreshStats, onPreview,
+  history, onDelete, onEdit, onRefreshStats, onPreview,
 }) {
   const [mode, setMode] = useState('single')
 
@@ -272,6 +272,7 @@ export default function UrlShortener({
         <History
           history={history}
           onDelete={onDelete}
+          onEdit={onEdit}
           onRefreshStats={onRefreshStats}
           onPreview={onPreview}
         />

@@ -32,6 +32,9 @@ public class Click {
     @Column(name = "user_agent", length = 512)
     private String userAgent;
 
+    @Column(name = "country", length = 2)
+    private String country;
+
     @PrePersist
     protected void onCreate() {
         clickedAt = OffsetDateTime.now(ZoneOffset.UTC);

@@ -47,6 +47,7 @@ public class UrlService {
     private final BCryptPasswordEncoder passwordEncoder;
     private final UserAgentParser userAgentParser;
     private final UrlCacheService urlCacheService;
+    private final GeoIpService geoIpService;
     private final MeterRegistry meterRegistry;
 
     @Value("${app.base-url}")
@@ -95,7 +96,7 @@ public class UrlService {
     }
 
     @Transactional
-    public String resolveAndTrack(String code, String referrer, String userAgent) {
+    public String resolveAndTrack(String code, String referrer, String userAgent, String ip) {
         if (!bloomFilterService.mightExist(code)) {
             throw new UrlNotFoundException(code);
         }
@@ -134,6 +135,7 @@ public class UrlService {
         click.setReferrer(truncate(referrer, 2048));
         click.setUserAgent(truncate(userAgent, 512));
         clickRepository.save(click);
+        geoIpService.resolveAndStore(click.getId(), ip);
 
         urlRepository.incrementClickCount(urlId);
 
@@ -165,6 +167,11 @@ public class UrlService {
         List<BreakdownEntry> browserBreakdown = toBreakdown(userAgents, userAgentParser::browser);
         List<BreakdownEntry> osBreakdown = toBreakdown(userAgents, userAgentParser::os);
 
+        List<BreakdownEntry> countryBreakdown = clickRepository.countryBreakdown(url.getId())
+                .stream()
+                .map(row -> new BreakdownEntry((String) row[0], ((Number) row[1]).longValue()))
+                .toList();
+
         return new StatsResponse(
                 code,
                 baseUrl + "/" + code,
@@ -174,6 +181,7 @@ public class UrlService {
                 clicksByDay,
                 browserBreakdown,
                 osBreakdown,
+                countryBreakdown,
                 url.getExpiresAt()
         );
     }
@@ -201,6 +209,15 @@ public class UrlService {
             throw new InvalidPasswordException();
         }
         return new UnlockResponse(url.getOriginalUrl());
+    }
+
+    @Transactional
+    public void edit(String code, String newUrl) {
+        Url url = urlRepository.findByShortCode(code)
+                .orElseThrow(() -> new UrlNotFoundException(code));
+        url.setOriginalUrl(newUrl);
+        urlRepository.save(url);
+        urlCacheService.evict(code);
     }
 
     @Transactional

@@ -38,5 +38,11 @@ export function useHistory() {
     )
   }
 
-  return { history, addEntry, removeEntry, updateStats }
+  function updateEntryUrl(shortCode, newUrl) {
+    setHistory(prev =>
+      prev.map(h => h.shortCode === shortCode ? { ...h, originalUrl: newUrl } : h)
+    )
+  }
+
+  return { history, addEntry, removeEntry, updateStats, updateEntryUrl }
 }

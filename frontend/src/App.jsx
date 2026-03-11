@@ -24,7 +24,7 @@ export default function App() {
   const [copied, setCopied] = useState(false)
   const intervalRef = useRef(null)
 
-  const { history, addEntry, removeEntry, updateStats } = useHistory()
+  const { history, addEntry, removeEntry, updateStats, updateEntryUrl } = useHistory()
 
   async function fetchStats(code) {
     try {
@@ -98,6 +98,19 @@ export default function App() {
     }
   }
 
+  async function handleEdit(shortCode, newUrl) {
+    try {
+      await fetch(`/api/urls/${shortCode}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url: newUrl }),
+      })
+      updateEntryUrl(shortCode, newUrl)
+    } catch {
+      // best-effort
+    }
+  }
+
   async function handleDelete(shortCode) {
     try {
       await fetch(`/api/urls/${shortCode}`, { method: 'DELETE' })
@@ -160,6 +173,7 @@ export default function App() {
         handleUrlPaste={handleUrlPaste}
         history={history}
         onDelete={handleDelete}
+        onEdit={handleEdit}
         onRefreshStats={fetchStats}
         onPreview={code => setPreviewCode(code)}
       />

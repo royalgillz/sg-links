@@ -2,6 +2,7 @@ package com.urlshortener.controller;
 
 import com.urlshortener.dto.BulkShortenItem;
 import com.urlshortener.dto.BulkShortenRequest;
+import com.urlshortener.dto.EditRequest;
 import com.urlshortener.dto.ShortenRequest;
 import com.urlshortener.dto.ShortenResponse;
 import com.urlshortener.dto.StatsResponse;
@@ -53,8 +54,9 @@ public class UrlController {
 
         String referrer = request.getHeader("Referer");
         String userAgent = request.getHeader("User-Agent");
+        String ip = extractIp(request);
         try {
-            String originalUrl = urlService.resolveAndTrack(pathVar, referrer, userAgent);
+            String originalUrl = urlService.resolveAndTrack(pathVar, referrer, userAgent, ip);
             return ResponseEntity.status(HttpStatus.FOUND)
                     .location(URI.create(originalUrl))
                     .build();
@@ -87,10 +89,27 @@ public class UrlController {
         return ResponseEntity.ok(urlService.getStats(code));
     }
 
+    @Operation(summary = "Update the destination URL of a short link")
+    @PatchMapping("/api/urls/{code}")
+    public ResponseEntity<Void> edit(
+            @PathVariable String code,
+            @Valid @RequestBody EditRequest request) {
+        urlService.edit(code, request.url());
+        return ResponseEntity.noContent().build();
+    }
+
     @Operation(summary = "Delete a short URL")
     @DeleteMapping("/api/urls/{code}")
     public ResponseEntity<Void> delete(@PathVariable String code) {
         urlService.delete(code);
         return ResponseEntity.noContent().build();
+    }
+
+    private String extractIp(HttpServletRequest request) {
+        String forwarded = request.getHeader("X-Forwarded-For");
+        if (forwarded != null && !forwarded.isBlank()) {
+            return forwarded.split(",")[0].trim();
+        }
+        return request.getRemoteAddr();
     }
 }
