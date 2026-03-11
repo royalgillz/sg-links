@@ -5,11 +5,15 @@ import com.urlshortener.dto.BulkShortenRequest;
 import com.urlshortener.dto.EditRequest;
 import com.urlshortener.dto.ShortenRequest;
 import com.urlshortener.dto.ShortenResponse;
+import com.urlshortener.dto.SlugSuggestionRequest;
+import com.urlshortener.dto.SlugSuggestionResponse;
 import com.urlshortener.dto.StatsResponse;
 import com.urlshortener.dto.UnlockRequest;
 import com.urlshortener.dto.UnlockResponse;
 import com.urlshortener.exception.UrlPasswordRequiredException;
+import com.urlshortener.service.SlugSuggestionService;
 import com.urlshortener.service.UrlService;
+import com.urlshortener.util.IpUtils;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
@@ -28,6 +32,7 @@ import java.util.List;
 public class UrlController {
 
     private final UrlService urlService;
+    private final SlugSuggestionService slugSuggestionService;
 
     @Operation(summary = "Shorten a URL")
     @PostMapping("/api/urls")
@@ -42,19 +47,26 @@ public class UrlController {
         return ResponseEntity.status(HttpStatus.CREATED).body(urlService.bulkShorten(request));
     }
 
-    @Operation(summary = "Redirect to the original URL (302). Append + to see a preview instead. Password-protected links redirect to the unlock page.")
+    @Operation(summary = "Suggest readable slugs for a URL using AI")
+    @PostMapping("/api/urls/suggest-slug")
+    public ResponseEntity<SlugSuggestionResponse> suggestSlug(@Valid @RequestBody SlugSuggestionRequest request) {
+        List<String> suggestions = slugSuggestionService.suggest(request.url());
+        return ResponseEntity.ok(new SlugSuggestionResponse(suggestions));
+    }
+
+    @Operation(summary = "Redirect to the original URL (302). Append + to see shareable analytics. Password-protected links redirect to the unlock page.")
     @GetMapping("/{pathVar:[a-zA-Z0-9_-]+[+]?}")
     public ResponseEntity<Void> redirect(@PathVariable String pathVar, HttpServletRequest request) {
         if (pathVar.endsWith("+")) {
             String code = pathVar.substring(0, pathVar.length() - 1);
             return ResponseEntity.status(HttpStatus.FOUND)
-                    .location(URI.create("/?preview=" + code))
+                    .location(URI.create("/s/" + code))
                     .build();
         }
 
         String referrer = request.getHeader("Referer");
         String userAgent = request.getHeader("User-Agent");
-        String ip = extractIp(request);
+        String ip = IpUtils.extractIp(request);
         try {
             String originalUrl = urlService.resolveAndTrack(pathVar, referrer, userAgent, ip);
             return ResponseEntity.status(HttpStatus.FOUND)
@@ -103,13 +115,5 @@ public class UrlController {
     public ResponseEntity<Void> delete(@PathVariable String code) {
         urlService.delete(code);
         return ResponseEntity.noContent().build();
-    }
-
-    private String extractIp(HttpServletRequest request) {
-        String forwarded = request.getHeader("X-Forwarded-For");
-        if (forwarded != null && !forwarded.isBlank()) {
-            return forwarded.split(",")[0].trim();
-        }
-        return request.getRemoteAddr();
     }
 }

@@ -37,6 +37,10 @@ public class ApiKey {
     @Column(name = "revoked", nullable = false)
     private boolean revoked = false;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
+
     @PrePersist
     protected void onCreate() {
         createdAt = OffsetDateTime.now(ZoneOffset.UTC);

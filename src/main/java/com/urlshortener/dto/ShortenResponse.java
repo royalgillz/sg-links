@@ -7,5 +7,8 @@ public record ShortenResponse(
         String shortUrl,
         String originalUrl,
         OffsetDateTime expiresAt,
-        boolean passwordProtected
+        boolean passwordProtected,
+        String ogTitle,
+        String ogDescription,
+        String ogImage
 ) {}

@@ -3,6 +3,7 @@ package com.urlshortener.config;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.urlshortener.dto.ErrorResponse;
 import com.urlshortener.service.RateLimiterService;
+import com.urlshortener.util.IpUtils;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -26,7 +27,7 @@ public class RateLimitInterceptor implements HandlerInterceptor {
             return true; // API key holders bypass rate limiting
         }
 
-        String ip = resolveClientIp(request);
+        String ip = IpUtils.extractIp(request);
         long retryAfter = rateLimiterService.check(ip);
 
         if (retryAfter > 0) {
@@ -43,11 +44,4 @@ public class RateLimitInterceptor implements HandlerInterceptor {
         return true;
     }
 
-    private String resolveClientIp(HttpServletRequest request) {
-        String forwarded = request.getHeader("X-Forwarded-For");
-        if (forwarded != null && !forwarded.isBlank()) {
-            return forwarded.split(",")[0].trim();
-        }
-        return request.getRemoteAddr();
-    }
 }

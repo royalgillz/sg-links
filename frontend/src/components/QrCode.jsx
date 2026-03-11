@@ -13,7 +13,7 @@ export default function QrCode({ url }) {
     })
   }, [url])
 
-  function handleDownload() {
+  function handleDownloadPng() {
     QRCode.toDataURL(url, { width: 512, margin: 1, color: { dark: '#ffffff', light: '#111111' } })
       .then(dataUrl => {
         const a = document.createElement('a')
@@ -23,17 +23,38 @@ export default function QrCode({ url }) {
       })
   }
 
+  function handleDownloadSvg() {
+    QRCode.toString(url, { type: 'svg', width: 512, margin: 1, color: { dark: '#ffffff', light: '#111111' } })
+      .then(svgString => {
+        const blob = new Blob([svgString], { type: 'image/svg+xml' })
+        const a = document.createElement('a')
+        a.href = URL.createObjectURL(blob)
+        a.download = 'qr.svg'
+        a.click()
+        URL.revokeObjectURL(a.href)
+      })
+  }
+
   return (
     <div className="flex flex-col items-center gap-2 p-4 border-t border-white/10">
       <p className="text-xs text-gray-500 uppercase tracking-widest self-start">QR Code</p>
       <canvas ref={canvasRef} className="rounded-lg" />
-      <button
-        onClick={handleDownload}
-        className="text-xs bg-white/10 hover:bg-white/15 border border-white/10
-                   text-gray-300 px-3 py-1.5 rounded-lg transition-all"
-      >
-        Download PNG
-      </button>
+      <div className="flex gap-2">
+        <button
+          onClick={handleDownloadPng}
+          className="text-xs bg-white/10 hover:bg-white/15 border border-white/10
+                     text-gray-300 px-3 py-1.5 rounded-lg transition-all"
+        >
+          Download PNG
+        </button>
+        <button
+          onClick={handleDownloadSvg}
+          className="text-xs bg-white/10 hover:bg-white/15 border border-white/10
+                     text-gray-300 px-3 py-1.5 rounded-lg transition-all"
+        >
+          Download SVG
+        </button>
+      </div>
     </div>
   )
 }

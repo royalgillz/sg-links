@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>URL Shortener</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="header">
+    <span class="dot"></span>
+    <span class="title">URL Shortener</span>
+  </div>
+
+  <div class="content">
+    <div class="field">
+      <label>URL to shorten</label>
+      <input id="urlInput" type="url" placeholder="https://..." />
+    </div>
+
+    <div class="field">
+      <label>Custom alias <span class="optional">(optional)</span></label>
+      <input id="aliasInput" type="text" placeholder="my-alias" maxlength="20" />
+    </div>
+
+    <button id="shortenBtn">Shorten →</button>
+
+    <div id="result" class="result hidden">
+      <div class="result-url" id="shortUrl"></div>
+      <div class="result-actions">
+        <button id="copyBtn" class="btn-secondary">Copy</button>
+        <a id="openBtn" class="btn-open" target="_blank" rel="noopener">Open ↗</a>
+      </div>
+    </div>
+
+    <div id="error" class="error hidden"></div>
+  </div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

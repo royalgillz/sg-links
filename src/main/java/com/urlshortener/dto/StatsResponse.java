@@ -13,5 +13,8 @@ public record StatsResponse(
         List<BreakdownEntry> browserBreakdown,
         List<BreakdownEntry> osBreakdown,
         List<BreakdownEntry> countryBreakdown,
-        OffsetDateTime expiresAt
+        OffsetDateTime expiresAt,
+        String ogTitle,
+        String ogDescription,
+        String ogImage
 ) {}

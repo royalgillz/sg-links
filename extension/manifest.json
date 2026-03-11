@@ -1,0 +1,15 @@
+{
+  "manifest_version": 3,
+  "name": "URL Shortener",
+  "version": "1.0.0",
+  "description": "Shorten the current tab's URL instantly.",
+  "permissions": ["activeTab", "clipboardWrite"],
+  "host_permissions": [
+    "https://*.up.railway.app/*",
+    "http://localhost:8080/*"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Shorten this URL"
+  }
+}

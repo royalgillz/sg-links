@@ -37,6 +37,19 @@ public class Url {
     @Column(name = "password_hash", length = 72)
     private String passwordHash;
 
+    @Column(name = "og_title", length = 200)
+    private String ogTitle;
+
+    @Column(name = "og_description", length = 500)
+    private String ogDescription;
+
+    @Column(name = "og_image", columnDefinition = "TEXT")
+    private String ogImage;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
+    private User user;
+
     @PrePersist
     protected void onCreate() {
         createdAt = OffsetDateTime.now(ZoneOffset.UTC);

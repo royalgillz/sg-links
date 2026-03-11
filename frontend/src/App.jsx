@@ -3,13 +3,33 @@ import UrlShortener from './components/UrlShortener'
 import PasswordModal from './components/PasswordModal'
 import PreviewModal from './components/PreviewModal'
 import ErrorPage from './components/ErrorPage'
+import ShareableStatsPage from './components/ShareableStatsPage'
+import LinkInBioPage from './components/LinkInBioPage'
+import AuthModal from './components/AuthModal'
 import { useHistory } from './hooks/useHistory'
+import { useAuth } from './hooks/useAuth'
+
+// Pathname-based routing for shareable pages
+const path = window.location.pathname
+if (path.startsWith('/s/')) {
+  document.body.innerHTML = ''
+}
+if (path.startsWith('/u/')) {
+  document.body.innerHTML = ''
+}
 
 export default function App() {
+  // Route to standalone pages based on pathname
+  if (path.startsWith('/s/')) return <ShareableStatsPage />
+  if (path.startsWith('/u/')) return <LinkInBioPage />
+
   const [url, setUrl] = useState('')
   const [alias, setAlias] = useState('')
   const [expiryDays, setExpiryDays] = useState('')
   const [password, setPassword] = useState('')
+  const [ogTitle, setOgTitle] = useState('')
+  const [ogDescription, setOgDescription] = useState('')
+  const [ogImage, setOgImage] = useState('')
 
   // Read query params set by backend redirects or bookmarklet
   const params = new URLSearchParams(window.location.search)
@@ -22,9 +42,11 @@ export default function App() {
   const [error, setError] = useState(null)
   const [loading, setLoading] = useState(false)
   const [copied, setCopied] = useState(false)
+  const [showAuthModal, setShowAuthModal] = useState(false)
   const intervalRef = useRef(null)
 
   const { history, addEntry, removeEntry, updateStats, updateEntryUrl } = useHistory()
+  const { token, user, login, logout, isLoggedIn } = useAuth()
 
   async function fetchStats(code) {
     try {
@@ -53,10 +75,21 @@ export default function App() {
     setStats(null)
     clearInterval(intervalRef.current)
     try {
+      const headers = { 'Content-Type': 'application/json' }
+      if (token) headers['Authorization'] = `Bearer ${token}`
+
       const res = await fetch('/api/urls', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ url: targetUrl, alias: alias.trim() || null, expiryDays: expiryDays ? Number(expiryDays) : null, password: password || null }),
+        headers,
+        body: JSON.stringify({
+          url: targetUrl,
+          alias: alias.trim() || null,
+          expiryDays: expiryDays ? Number(expiryDays) : null,
+          password: password || null,
+          ogTitle: ogTitle.trim() || null,
+          ogDescription: ogDescription.trim() || null,
+          ogImage: ogImage.trim() || null,
+        }),
       })
       const data = await res.json()
       if (!res.ok) {
@@ -100,9 +133,11 @@ export default function App() {
 
   async function handleEdit(shortCode, newUrl) {
     try {
+      const headers = { 'Content-Type': 'application/json' }
+      if (token) headers['Authorization'] = `Bearer ${token}`
       await fetch(`/api/urls/${shortCode}`, {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify({ url: newUrl }),
       })
       updateEntryUrl(shortCode, newUrl)
@@ -113,7 +148,9 @@ export default function App() {
 
   async function handleDelete(shortCode) {
     try {
-      await fetch(`/api/urls/${shortCode}`, { method: 'DELETE' })
+      const headers = {}
+      if (token) headers['Authorization'] = `Bearer ${token}`
+      await fetch(`/api/urls/${shortCode}`, { method: 'DELETE', headers })
     } catch {
       // best-effort
     }
@@ -136,6 +173,12 @@ export default function App() {
 
   return (
     <>
+      {showAuthModal && (
+        <AuthModal
+          onClose={() => setShowAuthModal(false)}
+          onAuth={login}
+        />
+      )}
       {unlockCode && (
         <PasswordModal
           code={unlockCode}
@@ -163,6 +206,12 @@ export default function App() {
         setExpiryDays={setExpiryDays}
         password={password}
         setPassword={setPassword}
+        ogTitle={ogTitle}
+        setOgTitle={setOgTitle}
+        ogDescription={ogDescription}
+        setOgDescription={setOgDescription}
+        ogImage={ogImage}
+        setOgImage={setOgImage}
         result={result}
         stats={stats}
         error={error}
@@ -176,6 +225,10 @@ export default function App() {
         onEdit={handleEdit}
         onRefreshStats={fetchStats}
         onPreview={code => setPreviewCode(code)}
+        user={user}
+        isLoggedIn={isLoggedIn}
+        onShowAuth={() => setShowAuthModal(true)}
+        onLogout={logout}
       />
     </>
   )

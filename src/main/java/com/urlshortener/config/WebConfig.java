@@ -20,6 +20,13 @@ public class WebConfig implements WebMvcConfigurer {
 
         // Rate limiting applies after API key check (valid keys bypass it)
         registry.addInterceptor(rateLimitInterceptor)
-                .addPathPatterns("/api/urls", "/api/urls/bulk", "/api/urls/*/stats", "/api/urls/*/unlock");
+                .addPathPatterns(
+                        "/api/urls",
+                        "/api/urls/bulk",
+                        "/api/urls/suggest-slug",
+                        "/api/urls/*/stats",
+                        "/api/urls/*/unlock",
+                        "/{code}"   // redirect endpoint
+                );
     }
 }

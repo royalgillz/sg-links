@@ -19,11 +19,14 @@ import com.urlshortener.model.Click;
 import com.urlshortener.model.Url;
 import com.urlshortener.repository.ClickRepository;
 import com.urlshortener.repository.UrlRepository;
+import com.urlshortener.repository.UserRepository;
 import io.micrometer.core.instrument.MeterRegistry;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,6 +45,7 @@ public class UrlService {
 
     private final UrlRepository urlRepository;
     private final ClickRepository clickRepository;
+    private final UserRepository userRepository;
     private final Base62Encoder base62Encoder;
     private final BloomFilterService bloomFilterService;
     private final BCryptPasswordEncoder passwordEncoder;
@@ -78,11 +82,19 @@ public class UrlService {
         if (request.password() != null && !request.password().isBlank()) {
             url.setPasswordHash(passwordEncoder.encode(request.password()));
         }
+        if (request.ogTitle() != null && !request.ogTitle().isBlank()) url.setOgTitle(request.ogTitle());
+        if (request.ogDescription() != null && !request.ogDescription().isBlank()) url.setOgDescription(request.ogDescription());
+        if (request.ogImage() != null && !request.ogImage().isBlank()) url.setOgImage(request.ogImage());
+
+        // Associate with authenticated user if logged in
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && auth.isAuthenticated() && auth.getPrincipal() instanceof Long userId) {
+            url.setUser(userRepository.getReferenceById(userId));
+        }
 
         try {
             urlRepository.saveAndFlush(url);
         } catch (DataIntegrityViolationException e) {
-            // Race condition: another request inserted the same alias between our check and save
             throw new AliasConflictException(code);
         }
         bloomFilterService.add(code);
@@ -92,7 +104,8 @@ public class UrlService {
                 "password", url.getPasswordHash() != null ? "true" : "false"
         ).increment();
 
-        return new ShortenResponse(code, baseUrl + "/" + code, request.url(), expiresAt, url.getPasswordHash() != null);
+        return new ShortenResponse(code, baseUrl + "/" + code, request.url(), expiresAt,
+                url.getPasswordHash() != null, url.getOgTitle(), url.getOgDescription(), url.getOgImage());
     }
 
     @Transactional
@@ -101,7 +114,6 @@ public class UrlService {
             throw new UrlNotFoundException(code);
         }
 
-        // Try cache first to avoid DB read on popular links
         UrlCacheService.CachedUrl cached = urlCacheService.get(code).orElse(null);
 
         final Long urlId;
@@ -182,7 +194,10 @@ public class UrlService {
                 browserBreakdown,
                 osBreakdown,
                 countryBreakdown,
-                url.getExpiresAt()
+                url.getExpiresAt(),
+                url.getOgTitle(),
+                url.getOgDescription(),
+                url.getOgImage()
         );
     }
 
@@ -191,7 +206,7 @@ public class UrlService {
         List<BulkShortenItem> results = new ArrayList<>();
         for (String url : request.urls()) {
             try {
-                ShortenRequest single = new ShortenRequest(url, null, null, null);
+                ShortenRequest single = new ShortenRequest(url, null, null, null, null, null, null);
                 ShortenResponse response = shorten(single);
                 results.add(new BulkShortenItem(url, response.shortUrl(), null));
             } catch (Exception e) {
@@ -215,6 +230,7 @@ public class UrlService {
     public void edit(String code, String newUrl) {
         Url url = urlRepository.findByShortCode(code)
                 .orElseThrow(() -> new UrlNotFoundException(code));
+        if (newUrl.equals(url.getOriginalUrl())) return;
         url.setOriginalUrl(newUrl);
         urlRepository.save(url);
         urlCacheService.evict(code);

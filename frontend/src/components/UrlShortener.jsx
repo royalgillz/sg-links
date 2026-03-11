@@ -8,10 +8,36 @@ import ApiKeys from './ApiKeys'
 
 export default function UrlShortener({
   url, setUrl, alias, setAlias, expiryDays, setExpiryDays, password, setPassword,
+  ogTitle, setOgTitle, ogDescription, setOgDescription, ogImage, setOgImage,
   result, stats, error, loading, copied, handleSubmit, handleCopy, handleUrlPaste,
   history, onDelete, onEdit, onRefreshStats, onPreview,
+  user, isLoggedIn, onShowAuth, onLogout,
 }) {
   const [mode, setMode] = useState('single')
+  const [showOg, setShowOg] = useState(false)
+  const [suggestLoading, setSuggestLoading] = useState(false)
+  const [suggestions, setSuggestions] = useState([])
+
+  async function handleSuggestSlug() {
+    if (!url.trim()) return
+    setSuggestLoading(true)
+    setSuggestions([])
+    try {
+      const res = await fetch('/api/urls/suggest-slug', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url }),
+      })
+      if (res.ok) {
+        const data = await res.json()
+        setSuggestions(data.suggestions ?? [])
+      }
+    } catch {
+      // best-effort
+    } finally {
+      setSuggestLoading(false)
+    }
+  }
 
   return (
     <div className="relative min-h-screen bg-gray-950 overflow-hidden flex items-center justify-center p-4">
@@ -19,11 +45,38 @@ export default function UrlShortener({
       {/* 3D background */}
       <ThreeBackground />
 
-      {/* Gradient overlay to blend scene into card area */}
+      {/* Gradient overlay */}
       <div className="absolute inset-0 z-10 bg-gradient-to-r from-gray-950/90 via-gray-950/60 to-transparent pointer-events-none" />
 
       {/* Card */}
       <div className="relative z-20 w-full max-w-lg">
+
+        {/* Top bar: auth */}
+        <div className="flex justify-end mb-3">
+          {isLoggedIn ? (
+            <div className="flex items-center gap-3">
+              <span className="text-xs text-gray-500">
+                <a href={`/u/${user.username}`} className="text-violet-400 hover:text-violet-300 transition-colors">
+                  @{user.username}
+                </a>
+              </span>
+              <button
+                onClick={onLogout}
+                className="text-xs text-gray-600 hover:text-gray-400 transition-colors"
+              >
+                Sign out
+              </button>
+            </div>
+          ) : (
+            <button
+              onClick={onShowAuth}
+              className="text-xs text-violet-400 hover:text-violet-300 border border-violet-800/50
+                         bg-violet-950/30 px-3 py-1.5 rounded-lg transition-all"
+            >
+              Sign in / Register
+            </button>
+          )}
+        </div>
 
         {/* Badge */}
         <div className="flex justify-center mb-6">
@@ -105,16 +158,51 @@ export default function UrlShortener({
           {/* Custom alias + Expiry */}
           <div className="flex items-center gap-2">
             <span className="text-xs text-gray-600 shrink-0">{window.location.host}/</span>
-            <input
-              type="text"
-              placeholder="custom-alias (optional)"
-              value={alias}
-              onChange={e => setAlias(e.target.value)}
-              maxLength={20}
-              className="flex-1 bg-white/5 border border-white/10 text-white placeholder-gray-600
-                         rounded-lg px-3 py-2 text-xs backdrop-blur focus:outline-none
-                         focus:border-violet-500/50 transition-all font-mono"
-            />
+            <div className="relative flex-1">
+              <input
+                type="text"
+                placeholder="custom-alias (optional)"
+                value={alias}
+                onChange={e => { setAlias(e.target.value); setSuggestions([]) }}
+                maxLength={20}
+                className="w-full bg-white/5 border border-white/10 text-white placeholder-gray-600
+                           rounded-lg px-3 py-2 text-xs backdrop-blur focus:outline-none
+                           focus:border-violet-500/50 transition-all font-mono"
+              />
+              {/* AI suggestions dropdown */}
+              {suggestions.length > 0 && (
+                <div className="absolute top-full left-0 right-0 mt-1 bg-gray-900 border border-white/10
+                                rounded-lg overflow-hidden z-10 shadow-xl">
+                  {suggestions.map(s => (
+                    <button
+                      key={s}
+                      type="button"
+                      onClick={() => { setAlias(s); setSuggestions([]) }}
+                      className="w-full text-left px-3 py-2 text-xs font-mono text-violet-300
+                                 hover:bg-white/10 transition-colors"
+                    >
+                      {s}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+            <button
+              type="button"
+              onClick={handleSuggestSlug}
+              disabled={suggestLoading || !url.trim()}
+              title="Suggest AI slugs"
+              className="shrink-0 text-xs bg-violet-900/40 hover:bg-violet-900/60 border border-violet-800/40
+                         text-violet-400 px-2.5 py-2 rounded-lg transition-all disabled:opacity-40
+                         disabled:cursor-not-allowed"
+            >
+              {suggestLoading ? (
+                <svg className="animate-spin w-3 h-3" viewBox="0 0 24 24" fill="none">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"/>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/>
+                </svg>
+              ) : '✨'}
+            </button>
             <select
               value={expiryDays}
               onChange={e => setExpiryDays(e.target.value)}
@@ -137,10 +225,53 @@ export default function UrlShortener({
             placeholder="🔒 Password protect  (optional)"
             value={password}
             onChange={e => setPassword(e.target.value)}
+            maxLength={72}
             className="w-full bg-white/5 border border-white/10 text-white placeholder-gray-600
                        rounded-lg px-3 py-2 text-xs backdrop-blur focus:outline-none
                        focus:border-violet-500/50 transition-all"
           />
+
+          {/* OG tag overrides (collapsible) */}
+          <button
+            type="button"
+            onClick={() => setShowOg(v => !v)}
+            className="text-xs text-gray-600 hover:text-gray-400 transition-colors w-full text-left"
+          >
+            {showOg ? '▾' : '▸'} Social preview overrides (optional)
+          </button>
+          {showOg && (
+            <div className="space-y-1.5 pl-2 border-l border-white/10">
+              <input
+                type="text"
+                placeholder="OG Title (e.g. Check out this article)"
+                value={ogTitle}
+                onChange={e => setOgTitle(e.target.value)}
+                maxLength={200}
+                className="w-full bg-white/5 border border-white/10 text-white placeholder-gray-600
+                           rounded-lg px-3 py-2 text-xs backdrop-blur focus:outline-none
+                           focus:border-violet-500/50 transition-all"
+              />
+              <input
+                type="text"
+                placeholder="OG Description (shown in link previews)"
+                value={ogDescription}
+                onChange={e => setOgDescription(e.target.value)}
+                maxLength={500}
+                className="w-full bg-white/5 border border-white/10 text-white placeholder-gray-600
+                           rounded-lg px-3 py-2 text-xs backdrop-blur focus:outline-none
+                           focus:border-violet-500/50 transition-all"
+              />
+              <input
+                type="url"
+                placeholder="OG Image URL (preview thumbnail)"
+                value={ogImage}
+                onChange={e => setOgImage(e.target.value)}
+                className="w-full bg-white/5 border border-white/10 text-white placeholder-gray-600
+                           rounded-lg px-3 py-2 text-xs backdrop-blur focus:outline-none
+                           focus:border-violet-500/50 transition-all"
+              />
+            </div>
+          )}
         </form>
 
         {/* Error */}
@@ -174,6 +305,16 @@ export default function UrlShortener({
                   {copied ? '✓ Copied!' : 'Copy'}
                 </button>
                 <a
+                  href={result.shortUrl + '+'}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-xs bg-white/5 hover:bg-white/10 border border-white/10
+                             text-gray-400 px-3 py-1.5 rounded-lg transition-all"
+                  title="Shareable analytics"
+                >
+                  Stats ↗
+                </a>
+                <a
                   href={result.shortUrl}
                   target="_blank"
                   rel="noopener noreferrer"
@@ -184,11 +325,11 @@ export default function UrlShortener({
                 </a>
               </div>
               <p className="text-xs text-gray-600 mt-2 truncate">→ {result.originalUrl}</p>
-            {result.expiresAt && (
-              <p className="text-xs text-amber-600 mt-1">
-                ⏱ Expires {new Date(result.expiresAt).toLocaleDateString(undefined, { dateStyle: 'medium' })}
-              </p>
-            )}
+              {result.expiresAt && (
+                <p className="text-xs text-amber-600 mt-1">
+                  ⏱ Expires {new Date(result.expiresAt).toLocaleDateString(undefined, { dateStyle: 'medium' })}
+                </p>
+              )}
             </div>
 
             {/* QR Code */}
