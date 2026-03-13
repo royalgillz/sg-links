@@ -43,24 +43,24 @@ class UrlShortenerIntegrationTest {
 
     @Test
     void shortenAndResolve() {
-        ShortenRequest req = new ShortenRequest("https://example.com", null, null, null);
+        ShortenRequest req = new ShortenRequest("https://example.com", null, null, null, null, null, null);
         ShortenResponse resp = urlService.shorten(req);
 
         assertThat(resp.shortUrl()).contains(resp.shortCode());
         assertThat(resp.originalUrl()).isEqualTo("https://example.com");
         assertThat(resp.passwordProtected()).isFalse();
 
-        String resolved = urlService.resolveAndTrack(resp.shortCode(), null, null);
+        String resolved = urlService.resolveAndTrack(resp.shortCode(), null, null, null);
         assertThat(resolved).isEqualTo("https://example.com");
     }
 
     @Test
     void clickCountIncrements() {
-        ShortenRequest req = new ShortenRequest("https://github.com", null, null, null);
+        ShortenRequest req = new ShortenRequest("https://github.com", null, null, null, null, null, null);
         ShortenResponse resp = urlService.shorten(req);
 
-        urlService.resolveAndTrack(resp.shortCode(), null, null);
-        urlService.resolveAndTrack(resp.shortCode(), "https://google.com", "Mozilla/5.0");
+        urlService.resolveAndTrack(resp.shortCode(), null, null, null);
+        urlService.resolveAndTrack(resp.shortCode(), "https://google.com", "Mozilla/5.0", null);
 
         StatsResponse stats = urlService.getStats(resp.shortCode());
         assertThat(stats.totalClicks()).isEqualTo(2);
