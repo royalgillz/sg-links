@@ -17,11 +17,13 @@ export default function UrlShortener({
   const [showOg, setShowOg] = useState(false)
   const [suggestLoading, setSuggestLoading] = useState(false)
   const [suggestions, setSuggestions] = useState([])
+  const [suggestError, setSuggestError] = useState(null)
 
   async function handleSuggestSlug() {
     if (!url.trim()) return
     setSuggestLoading(true)
     setSuggestions([])
+    setSuggestError(null)
     try {
       const res = await fetch('/api/urls/suggest-slug', {
         method: 'POST',
@@ -30,10 +32,17 @@ export default function UrlShortener({
       })
       if (res.ok) {
         const data = await res.json()
-        setSuggestions(data.suggestions ?? [])
+        const slugs = data.suggestions ?? []
+        if (slugs.length === 0) {
+          setSuggestError('No suggestions (API key not configured)')
+        } else {
+          setSuggestions(slugs)
+        }
+      } else {
+        setSuggestError('Suggestion failed')
       }
     } catch {
-      // best-effort
+      setSuggestError('Network error')
     } finally {
       setSuggestLoading(false)
     }
@@ -163,7 +172,7 @@ export default function UrlShortener({
                 type="text"
                 placeholder="custom-alias (optional)"
                 value={alias}
-                onChange={e => { setAlias(e.target.value); setSuggestions([]) }}
+                onChange={e => { setAlias(e.target.value); setSuggestions([]); setSuggestError(null) }}
                 maxLength={20}
                 className="w-full bg-white/5 border border-white/10 text-white placeholder-gray-600
                            rounded-lg px-3 py-2 text-xs backdrop-blur focus:outline-none
@@ -172,7 +181,7 @@ export default function UrlShortener({
               {/* AI suggestions dropdown */}
               {suggestions.length > 0 && (
                 <div className="absolute top-full left-0 right-0 mt-1 bg-gray-900 border border-white/10
-                                rounded-lg overflow-hidden z-10 shadow-xl">
+                                rounded-lg overflow-hidden z-50 shadow-xl">
                   {suggestions.map(s => (
                     <button
                       key={s}
@@ -184,6 +193,11 @@ export default function UrlShortener({
                       {s}
                     </button>
                   ))}
+                </div>
+              )}
+              {suggestError && (
+                <div className="absolute top-full left-0 right-0 mt-1 z-50">
+                  <p className="text-xs text-red-400/70 px-1 py-1">{suggestError}</p>
                 </div>
               )}
             </div>
