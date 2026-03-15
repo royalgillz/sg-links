@@ -66,7 +66,7 @@ export default function App() {
     if (!result) return
     intervalRef.current = setInterval(() => fetchStats(result.shortCode), 5000)
     return () => clearInterval(intervalRef.current)
-  }, [result])
+  }, [result?.shortCode])
 
   async function shortenUrl(targetUrl) {
     setLoading(true)

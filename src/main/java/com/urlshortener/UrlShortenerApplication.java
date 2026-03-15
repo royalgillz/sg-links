@@ -6,33 +6,38 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.HashMap;
-import java.util.Map;
 
 @SpringBootApplication
 public class UrlShortenerApplication {
 
     public static void main(String[] args) {
-        SpringApplication app = new SpringApplication(UrlShortenerApplication.class);
-        app.setDefaultProperties(loadDotEnv());
-        app.run(args);
+        loadDotEnv();
+        SpringApplication.run(UrlShortenerApplication.class, args);
     }
 
-    /** Reads .env into a map. Real env vars on Railway override these (lower priority). */
-    private static Map<String, Object> loadDotEnv() {
-        Map<String, Object> props = new HashMap<>();
+    /**
+     * Reads .env and injects entries as system properties so Spring's @Value resolves them.
+     * Skips keys already present as real environment variables (Railway, CI, etc.).
+     */
+    private static void loadDotEnv() {
         Path env = Path.of(".env");
-        if (!Files.exists(env)) return props;
+        if (!Files.exists(env)) return;
         try {
+            int loaded = 0;
             for (String line : Files.readAllLines(env)) {
                 line = line.trim();
                 if (line.startsWith("#") || !line.contains("=")) continue;
                 int idx = line.indexOf('=');
                 String key = line.substring(0, idx).trim();
                 String value = line.substring(idx + 1).trim();
-                props.put(key, value);
+                if (System.getenv(key) == null && System.getProperty(key) == null) {
+                    System.setProperty(key, value);
+                    loaded++;
+                }
             }
-        } catch (IOException ignored) {}
-        return props;
+            System.out.println("[dotenv] Loaded " + loaded + " properties from .env");
+        } catch (IOException e) {
+            System.err.println("[dotenv] Failed to read .env: " + e.getMessage());
+        }
     }
 }

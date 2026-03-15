@@ -23,5 +23,10 @@ export function useAuth() {
     setUser(null)
   }, [])
 
-  return { token, user, login, logout, isLoggedIn: !!token }
+  // Call this after any fetch that returns 401 to clear a stale/expired token
+  const clearIfExpired = useCallback((status) => {
+    if (status === 401) logout()
+  }, [logout])
+
+  return { token, user, login, logout, clearIfExpired, isLoggedIn: !!token }
 }

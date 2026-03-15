@@ -25,11 +25,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
@@ -230,6 +232,7 @@ public class UrlService {
     public void edit(String code, String newUrl) {
         Url url = urlRepository.findByShortCode(code)
                 .orElseThrow(() -> new UrlNotFoundException(code));
+        checkOwnership(url);
         if (newUrl.equals(url.getOriginalUrl())) return;
         url.setOriginalUrl(newUrl);
         urlRepository.save(url);
@@ -240,9 +243,23 @@ public class UrlService {
     public void delete(String code) {
         Url url = urlRepository.findByShortCode(code)
                 .orElseThrow(() -> new UrlNotFoundException(code));
+        checkOwnership(url);
         urlRepository.delete(url);
         urlCacheService.evict(code);
         meterRegistry.counter("urls.deleted").increment();
+    }
+
+    /** Allows anonymous links (no owner) to be edited/deleted by anyone.
+     *  Owned links may only be modified by their owner. */
+    private void checkOwnership(Url url) {
+        if (url.getUser() == null) return; // unowned link — anyone can modify
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth == null || !auth.isAuthenticated() || !(auth.getPrincipal() instanceof Long userId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Not the owner");
+        }
+        if (!url.getUser().getId().equals(userId)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Not the owner");
+        }
     }
 
     private String generateUniqueCode() {

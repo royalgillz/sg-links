@@ -2,6 +2,7 @@ package com.urlshortener.service;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -29,8 +30,14 @@ public class SlugSuggestionService {
             .connectTimeout(Duration.ofSeconds(5))
             .build();
 
-    @Value("${anthropic.api-key:}")
+    // Read directly from env var / system property — avoids application.yml indirection
+    @Value("${ANTHROPIC_API_KEY:}")
     private String apiKey;
+
+    @PostConstruct
+    void logConfig() {
+        log.info("Anthropic API key: {}", apiKey.isBlank() ? "NOT SET — AI slugs disabled" : "loaded (length=" + apiKey.length() + ")");
+    }
 
     private final ObjectMapper objectMapper;
 
@@ -71,7 +78,7 @@ public class SlugSuggestionService {
             HttpResponse<String> response = HTTP_CLIENT.send(request, HttpResponse.BodyHandlers.ofString());
 
             if (response.statusCode() != 200) {
-                log.warn("Anthropic API returned {}", response.statusCode());
+                log.warn("Anthropic API returned {} — body: {}", response.statusCode(), response.body());
                 return List.of();
             }
 
@@ -80,6 +87,8 @@ public class SlugSuggestionService {
 
             return Arrays.stream(text.strip().split("\\n"))
                     .map(String::strip)
+                    // Strip leading "1. ", "- ", "* " etc. that Claude sometimes adds
+                    .map(s -> s.replaceAll("^[\\d]+[.)\\s]+", "").replaceAll("^[-*•]\\s*", "").strip())
                     .filter(s -> VALID_SLUG.matcher(s).matches())
                     .limit(3)
                     .collect(Collectors.toList());
