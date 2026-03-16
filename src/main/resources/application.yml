@@ -51,5 +51,8 @@ app:
     secret: ${JWT_SECRET:change-me-use-a-long-random-secret-in-production}
     expiry-hours: 720  # 30 days
 
+openai:
+  api-key: ${OPENAI_API_KEY:}
+
 anthropic:
   api-key: ${ANTHROPIC_API_KEY:}
