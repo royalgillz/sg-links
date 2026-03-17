@@ -66,7 +66,16 @@ public class UrlService {
         if (request.alias() != null && !request.alias().isBlank()) {
             code = request.alias();
             if (bloomFilterService.mightExist(code) && urlRepository.existsByShortCode(code)) {
-                throw new AliasConflictException(code);
+                // Allow reuse if the existing entry is expired — clean it up first
+                urlRepository.findByShortCode(code).ifPresent(existing -> {
+                    if (existing.getExpiresAt() != null &&
+                            existing.getExpiresAt().isBefore(OffsetDateTime.now(ZoneOffset.UTC))) {
+                        urlRepository.delete(existing);
+                        urlCacheService.evict(code);
+                    } else {
+                        throw new AliasConflictException(code);
+                    }
+                });
             }
         } else {
             code = generateUniqueCode();

@@ -18,8 +18,8 @@ public interface UrlRepository extends JpaRepository<Url, Long> {
     @Query("UPDATE Url u SET u.clickCount = u.clickCount + 1 WHERE u.id = :id")
     void incrementClickCount(@Param("id") Long id);
 
-    /** Used by BloomFilterService to hydrate on startup. */
-    @Query("SELECT u.shortCode FROM Url u")
+    /** Used by BloomFilterService to hydrate on startup. Excludes expired URLs so they don't block alias reuse. */
+    @Query("SELECT u.shortCode FROM Url u WHERE u.expiresAt IS NULL OR u.expiresAt > CURRENT_TIMESTAMP")
     List<String> findAllShortCodes();
 
     /** All links owned by a user, newest first. */
