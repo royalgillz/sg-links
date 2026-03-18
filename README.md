@@ -14,7 +14,7 @@ A full-featured URL shortener with analytics, user accounts, AI slug suggestions
 |---|---|
 | URL shortening | Base62 short codes with Bloom filter seeded from DB on startup |
 | Custom aliases | Choose your own slug (e.g. `/my-link`) |
-| AI slug suggestions | Click ✨ to get 3 AI-generated slug ideas via Claude (Haiku) |
+| AI slug suggestions | Click ✨ to get 3 AI-generated slug ideas (OpenAI gpt-4o-mini primary, Claude Haiku fallback) |
 | Link expiry | Set a TTL of 1 day to 1 year |
 | Password protection | BCrypt-hashed password gates the redirect |
 | Bulk shorten | Shorten up to 20 URLs at once |
@@ -43,7 +43,7 @@ A full-featured URL shortener with analytics, user accounts, AI slug suggestions
 | Frontend | React 19 + Vite + Tailwind CSS v4 |
 | Database | PostgreSQL 16 + Flyway migrations (V1–V8) |
 | Cache / Rate limiting | Redis 7 |
-| AI | Anthropic Claude Haiku (slug suggestions) |
+| AI | OpenAI gpt-4o-mini (primary) + Anthropic Claude Haiku (fallback) for slug suggestions |
 | 3D graphics | Three.js |
 | API docs | SpringDoc OpenAPI (Swagger UI) |
 | Metrics | Micrometer + Prometheus (`/actuator/prometheus`) |
@@ -129,7 +129,7 @@ Valid API keys bypass the per-IP rate limit.
 - **Rate limiter** — atomic fixed-window counter via Redis Lua script covering all endpoints including redirects
 - **JWT auth** — stateless HS256 tokens; `JwtAuthenticationFilter` sets Spring Security context; anonymous usage fully preserved
 - **API key auth** — SHA-256 hashed keys stored in DB; interceptor runs before rate limiter so valid keys skip it
-- **AI slugs** — calls Anthropic Claude Haiku via raw HTTP (no extra SDK dependency); gracefully returns empty list if `ANTHROPIC_API_KEY` is unset
+- **AI slugs** — tries OpenAI `gpt-4o-mini` first, falls back to Anthropic Claude Haiku; gracefully returns empty list if neither key is set; no extra SDK dependency (raw HTTP)
 - **OG tag injection** — `/s/{code}` and `/u/{username}` served by `SpaController` which reads `index.html` and injects per-link OG meta tags server-side
 - **Metrics** — `urls.created`, `urls.redirected` (cache_hit tag), `urls.deleted` counters exposed to Prometheus
 - **3-stage Docker build** — Node builds React → Maven injects assets → JRE runs the JAR
@@ -210,7 +210,8 @@ Required Railway environment variables:
 |---|---|
 | `APP_BASE_URL` | Your Railway public URL, e.g. `https://your-app.up.railway.app` |
 | `JWT_SECRET` | A long random string (min 32 chars) for signing JWT tokens |
-| `ANTHROPIC_API_KEY` | Optional — enables AI slug suggestions |
+| `OPENAI_API_KEY` | Optional — enables AI slug suggestions (primary, gpt-4o-mini) |
+| `ANTHROPIC_API_KEY` | Optional — AI slug fallback if OpenAI key is not set |
 | `PGHOST` | Injected by Railway Postgres plugin |
 | `PGPORT` | Injected by Railway Postgres plugin |
 | `PGDATABASE` | Injected by Railway Postgres plugin |
