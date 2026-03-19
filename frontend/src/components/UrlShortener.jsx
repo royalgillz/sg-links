@@ -12,6 +12,7 @@ export default function UrlShortener({
   result, stats, error, loading, copied, handleSubmit, handleCopy, handleUrlPaste,
   history, onDelete, onEdit, onRefreshStats, onPreview,
   user, isLoggedIn, onShowAuth, onLogout,
+  isDark, toggleTheme,
 }) {
   const [mode, setMode] = useState('single')
   const [showOg, setShowOg] = useState(false)
@@ -49,7 +50,10 @@ export default function UrlShortener({
   }
 
   return (
-    <div className="relative min-h-screen bg-gray-950 overflow-hidden flex items-center justify-center p-4">
+    <div
+      className="relative min-h-screen overflow-hidden flex items-center justify-center p-4"
+      style={{ background: 'var(--c-bg)' }}
+    >
 
       {/* 3D background */}
       <ThreeBackground />
@@ -60,18 +64,26 @@ export default function UrlShortener({
       {/* Card */}
       <div className="relative z-20 w-full max-w-lg">
 
-        {/* Top bar: auth */}
-        <div className="flex justify-end mb-3">
+        {/* Top bar: theme toggle + auth */}
+        <div className="flex justify-end items-center gap-2 mb-3">
+          <button
+            onClick={toggleTheme}
+            title={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
+            className="text-xs text-gray-500 hover:text-gray-300 transition-colors px-2 py-1.5"
+          >
+            {isDark ? '☀️' : '🌙'}
+          </button>
           {isLoggedIn ? (
             <div className="flex items-center gap-3">
-              <span className="text-xs text-gray-500">
+              <span className="text-xs" style={{ color: 'var(--c-text-subtle)' }}>
                 <a href={`/u/${user.username}`} className="text-violet-400 hover:text-violet-300 transition-colors">
                   @{user.username}
                 </a>
               </span>
               <button
                 onClick={onLogout}
-                className="text-xs text-gray-600 hover:text-gray-400 transition-colors"
+                className="text-xs transition-colors"
+                style={{ color: 'var(--c-text-subtle)' }}
               >
                 Sign out
               </button>
@@ -98,19 +110,22 @@ export default function UrlShortener({
 
         {/* Heading */}
         <div className="text-center mb-8">
-          <h1 className="text-5xl font-bold text-white tracking-tight mb-3 leading-tight">
+          <h1 className="text-5xl font-bold tracking-tight mb-3 leading-tight" style={{ color: 'var(--c-text)' }}>
             Short links,<br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-violet-400 to-fuchsia-400">
               big impact
             </span>
           </h1>
-          <p className="text-gray-400 text-sm">
+          <p className="text-sm" style={{ color: 'var(--c-text-muted)' }}>
             Paste any URL below and get a clean, shareable short link in seconds.
           </p>
         </div>
 
         {/* Mode tabs */}
-        <div className="flex gap-1 mb-4 bg-white/5 border border-white/10 rounded-xl p-1">
+        <div
+          className="flex gap-1 mb-4 border rounded-xl p-1"
+          style={{ background: 'var(--c-surface)', borderColor: 'var(--c-border)' }}
+        >
           {['single', 'bulk'].map(m => (
             <button
               key={m}
@@ -119,7 +134,8 @@ export default function UrlShortener({
               className={`flex-1 py-2 rounded-lg text-sm font-medium transition-all capitalize
                 ${mode === m
                   ? 'bg-violet-600 text-white shadow'
-                  : 'text-gray-500 hover:text-gray-300'}`}
+                  : 'transition-colors'}`}
+              style={mode !== m ? { color: 'var(--c-text-muted)' } : {}}
             >
               {m === 'single' ? 'Single URL' : 'Bulk'}
             </button>
@@ -139,9 +155,13 @@ export default function UrlShortener({
               value={url}
               onChange={e => setUrl(e.target.value)}
               onPaste={handleUrlPaste}
-              className="flex-1 bg-white/5 border border-white/10 text-white placeholder-gray-500
-                         rounded-xl px-4 py-3.5 text-sm backdrop-blur focus:outline-none
+              className="flex-1 border rounded-xl px-4 py-3.5 text-sm backdrop-blur focus:outline-none
                          focus:border-violet-500 focus:ring-1 focus:ring-violet-500/50 transition-all"
+              style={{
+                background: 'var(--c-input)',
+                borderColor: 'var(--c-border)',
+                color: 'var(--c-text)',
+              }}
             />
             <button
               type="submit"
@@ -166,7 +186,7 @@ export default function UrlShortener({
 
           {/* Custom alias + Expiry */}
           <div className="flex items-center gap-2">
-            <span className="text-xs text-gray-600 shrink-0">{window.location.host}/</span>
+            <span className="text-xs shrink-0" style={{ color: 'var(--c-text-subtle)' }}>{window.location.host}/</span>
             <div className="relative flex-1">
               <input
                 type="text"
@@ -174,14 +194,20 @@ export default function UrlShortener({
                 value={alias}
                 onChange={e => { setAlias(e.target.value); setSuggestions([]); setSuggestError(null) }}
                 maxLength={20}
-                className="w-full bg-white/5 border border-white/10 text-white placeholder-gray-600
-                           rounded-lg px-3 py-2 text-xs backdrop-blur focus:outline-none
+                className="w-full border rounded-lg px-3 py-2 text-xs backdrop-blur focus:outline-none
                            focus:border-violet-500/50 transition-all font-mono"
+                style={{
+                  background: 'var(--c-input)',
+                  borderColor: 'var(--c-border)',
+                  color: 'var(--c-text)',
+                }}
               />
               {/* AI suggestions dropdown */}
               {suggestions.length > 0 && (
-                <div className="absolute top-full left-0 right-0 mt-1 bg-gray-900 border border-white/10
-                                rounded-lg overflow-hidden z-50 shadow-xl">
+                <div
+                  className="absolute top-full left-0 right-0 mt-1 border rounded-lg overflow-hidden z-50 shadow-xl"
+                  style={{ background: 'var(--c-card)', borderColor: 'var(--c-border)' }}
+                >
                   {suggestions.map(s => (
                     <button
                       key={s}
@@ -220,9 +246,13 @@ export default function UrlShortener({
             <select
               value={expiryDays}
               onChange={e => setExpiryDays(e.target.value)}
-              className="bg-white/5 border border-white/10 text-gray-400 rounded-lg px-2 py-2
-                         text-xs backdrop-blur focus:outline-none focus:border-violet-500/50
-                         transition-all cursor-pointer"
+              className="border rounded-lg px-2 py-2 text-xs backdrop-blur focus:outline-none
+                         focus:border-violet-500/50 transition-all cursor-pointer"
+              style={{
+                background: 'var(--c-input)',
+                borderColor: 'var(--c-border)',
+                color: 'var(--c-text-muted)',
+              }}
             >
               <option value="">No expiry</option>
               <option value="1">1 day</option>
@@ -240,30 +270,42 @@ export default function UrlShortener({
             value={password}
             onChange={e => setPassword(e.target.value)}
             maxLength={72}
-            className="w-full bg-white/5 border border-white/10 text-white placeholder-gray-600
-                       rounded-lg px-3 py-2 text-xs backdrop-blur focus:outline-none
+            className="w-full border rounded-lg px-3 py-2 text-xs backdrop-blur focus:outline-none
                        focus:border-violet-500/50 transition-all"
+            style={{
+              background: 'var(--c-input)',
+              borderColor: 'var(--c-border)',
+              color: 'var(--c-text)',
+            }}
           />
 
           {/* OG tag overrides (collapsible) */}
           <button
             type="button"
             onClick={() => setShowOg(v => !v)}
-            className="text-xs text-gray-600 hover:text-gray-400 transition-colors w-full text-left"
+            className="text-xs transition-colors w-full text-left"
+            style={{ color: 'var(--c-text-subtle)' }}
           >
             {showOg ? '▾' : '▸'} Social preview overrides (optional)
           </button>
           {showOg && (
-            <div className="space-y-1.5 pl-2 border-l border-white/10">
+            <div
+              className="space-y-1.5 pl-2 border-l"
+              style={{ borderColor: 'var(--c-border)' }}
+            >
               <input
                 type="text"
                 placeholder="OG Title (e.g. Check out this article)"
                 value={ogTitle}
                 onChange={e => setOgTitle(e.target.value)}
                 maxLength={200}
-                className="w-full bg-white/5 border border-white/10 text-white placeholder-gray-600
-                           rounded-lg px-3 py-2 text-xs backdrop-blur focus:outline-none
+                className="w-full border rounded-lg px-3 py-2 text-xs backdrop-blur focus:outline-none
                            focus:border-violet-500/50 transition-all"
+                style={{
+                  background: 'var(--c-input)',
+                  borderColor: 'var(--c-border)',
+                  color: 'var(--c-text)',
+                }}
               />
               <input
                 type="text"
@@ -271,18 +313,26 @@ export default function UrlShortener({
                 value={ogDescription}
                 onChange={e => setOgDescription(e.target.value)}
                 maxLength={500}
-                className="w-full bg-white/5 border border-white/10 text-white placeholder-gray-600
-                           rounded-lg px-3 py-2 text-xs backdrop-blur focus:outline-none
+                className="w-full border rounded-lg px-3 py-2 text-xs backdrop-blur focus:outline-none
                            focus:border-violet-500/50 transition-all"
+                style={{
+                  background: 'var(--c-input)',
+                  borderColor: 'var(--c-border)',
+                  color: 'var(--c-text)',
+                }}
               />
               <input
                 type="url"
                 placeholder="OG Image URL (preview thumbnail)"
                 value={ogImage}
                 onChange={e => setOgImage(e.target.value)}
-                className="w-full bg-white/5 border border-white/10 text-white placeholder-gray-600
-                           rounded-lg px-3 py-2 text-xs backdrop-blur focus:outline-none
+                className="w-full border rounded-lg px-3 py-2 text-xs backdrop-blur focus:outline-none
                            focus:border-violet-500/50 transition-all"
+                style={{
+                  background: 'var(--c-input)',
+                  borderColor: 'var(--c-border)',
+                  color: 'var(--c-text)',
+                }}
               />
             </div>
           )}
@@ -299,22 +349,25 @@ export default function UrlShortener({
 
         {/* Result card */}
         {result && (
-          <div className="mt-4 bg-white/5 border border-white/10 backdrop-blur rounded-2xl
-                          overflow-hidden shadow-2xl shadow-black/40">
+          <div
+            className="mt-4 border backdrop-blur rounded-2xl overflow-hidden shadow-2xl shadow-black/40"
+            style={{ background: 'var(--c-surface)', borderColor: 'var(--c-border)' }}
+          >
 
             {/* Short link row */}
-            <div className="p-4 border-b border-white/10">
-              <p className="text-xs text-gray-500 uppercase tracking-widest mb-2">Your short link</p>
+            <div className="p-4 border-b" style={{ borderColor: 'var(--c-border)' }}>
+              <p className="text-xs uppercase tracking-widest mb-2" style={{ color: 'var(--c-text-subtle)' }}>Your short link</p>
               <div className="flex items-center gap-2">
                 <span className="flex-1 font-mono text-violet-300 text-sm truncate">
                   {result.shortUrl}
                 </span>
                 <button
                   onClick={handleCopy}
-                  className={`text-xs px-3 py-1.5 rounded-lg font-medium transition-all whitespace-nowrap
+                  className={`text-xs px-3 py-1.5 rounded-lg font-medium transition-all whitespace-nowrap border
                     ${copied
-                      ? 'bg-green-900/60 text-green-300 border border-green-700/50'
-                      : 'bg-white/10 hover:bg-white/15 text-gray-300 border border-white/10'}`}
+                      ? 'bg-green-900/60 text-green-300 border-green-700/50'
+                      : 'hover:bg-white/15 text-gray-300'}`}
+                  style={!copied ? { background: 'var(--c-surface-hover)', borderColor: 'var(--c-border)' } : {}}
                 >
                   {copied ? '✓ Copied!' : 'Copy'}
                 </button>
@@ -322,8 +375,8 @@ export default function UrlShortener({
                   href={result.shortUrl + '+'}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-xs bg-white/5 hover:bg-white/10 border border-white/10
-                             text-gray-400 px-3 py-1.5 rounded-lg transition-all"
+                  className="text-xs border px-3 py-1.5 rounded-lg transition-all"
+                  style={{ background: 'var(--c-surface)', borderColor: 'var(--c-border)', color: 'var(--c-text-muted)' }}
                   title="Shareable analytics"
                 >
                   Stats ↗
@@ -338,7 +391,7 @@ export default function UrlShortener({
                   Open ↗
                 </a>
               </div>
-              <p className="text-xs text-gray-600 mt-2 truncate">→ {result.originalUrl}</p>
+              <p className="text-xs mt-2 truncate" style={{ color: 'var(--c-text-subtle)' }}>→ {result.originalUrl}</p>
               {result.expiresAt && (
                 <p className="text-xs text-amber-600 mt-1">
                   ⏱ Expires {new Date(result.expiresAt).toLocaleDateString(undefined, { dateStyle: 'medium' })}
@@ -353,10 +406,10 @@ export default function UrlShortener({
             {stats && (
               <div className="p-4">
                 <div className="flex items-center justify-between mb-3">
-                  <span className="text-xs text-gray-500 uppercase tracking-widest">Analytics</span>
+                  <span className="text-xs uppercase tracking-widest" style={{ color: 'var(--c-text-subtle)' }}>Analytics</span>
                   <div className="flex items-center gap-2">
                     <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
-                    <span className="text-xs text-gray-500">live</span>
+                    <span className="text-xs" style={{ color: 'var(--c-text-subtle)' }}>live</span>
                     <span className="text-xs font-mono font-semibold text-violet-300 bg-violet-900/40
                                      border border-violet-800/40 px-2.5 py-0.5 rounded-full">
                       {stats.totalClicks} {stats.totalClicks === 1 ? 'click' : 'clicks'}
@@ -368,22 +421,22 @@ export default function UrlShortener({
 
                 {/* Browser / OS breakdown */}
                 {(stats.browserBreakdown?.length > 0 || stats.osBreakdown?.length > 0) && (
-                  <div className="flex gap-4 mt-4 border-t border-white/10 pt-4">
+                  <div className="flex gap-4 mt-4 border-t pt-4" style={{ borderColor: 'var(--c-border)' }}>
                     {[{ label: 'Browsers', data: stats.browserBreakdown }, { label: 'OS', data: stats.osBreakdown }].map(({ label, data }) => (
                       data?.length > 0 && (
                         <div key={label} className="flex-1 min-w-0">
-                          <p className="text-xs text-gray-600 mb-1.5">{label}</p>
+                          <p className="text-xs mb-1.5" style={{ color: 'var(--c-text-subtle)' }}>{label}</p>
                           <ul className="space-y-1">
                             {data.map(entry => (
                               <li key={entry.label} className="flex items-center gap-2 text-xs">
-                                <div className="flex-1 bg-white/5 rounded-full h-1.5 overflow-hidden">
+                                <div className="flex-1 rounded-full h-1.5 overflow-hidden" style={{ background: 'var(--c-surface)' }}>
                                   <div
                                     className="bg-violet-500/70 h-full rounded-full"
                                     style={{ width: `${(entry.count / stats.totalClicks) * 100}%` }}
                                   />
                                 </div>
-                                <span className="text-gray-400 shrink-0 w-16 truncate">{entry.label}</span>
-                                <span className="text-gray-600 shrink-0">{entry.count}</span>
+                                <span className="shrink-0 w-16 truncate" style={{ color: 'var(--c-text-muted)' }}>{entry.label}</span>
+                                <span className="shrink-0" style={{ color: 'var(--c-text-subtle)' }}>{entry.count}</span>
                               </li>
                             ))}
                           </ul>
@@ -400,19 +453,19 @@ export default function UrlShortener({
                     {stats.recentClicks.map((c, i) => (
                       <li key={i} className="flex items-center gap-3 text-xs">
                         <span className="w-1.5 h-1.5 rounded-full bg-violet-500/60 shrink-0" />
-                        <span className="text-gray-500 shrink-0">
+                        <span className="shrink-0" style={{ color: 'var(--c-text-subtle)' }}>
                           {new Date(c.clickedAt).toLocaleTimeString()}
                         </span>
-                        <span className="text-gray-400 truncate">
+                        <span className="truncate" style={{ color: 'var(--c-text-muted)' }}>
                           {c.referrer && c.referrer.trim()
                             ? (() => { try { return new URL(c.referrer).hostname } catch { return c.referrer } })()
-                            : <span className="text-gray-600 italic">direct</span>}
+                            : <span className="italic" style={{ color: 'var(--c-text-subtle)' }}>direct</span>}
                         </span>
                       </li>
                     ))}
                   </ul>
                 ) : (
-                  <p className="text-xs text-gray-600 italic">
+                  <p className="text-xs italic" style={{ color: 'var(--c-text-subtle)' }}>
                     No clicks yet — share your link to see activity here.
                   </p>
                 )}
@@ -436,8 +489,11 @@ export default function UrlShortener({
         <ApiKeys />
 
         {/* GSD Bookmarklet */}
-        <div className="mt-6 border border-white/5 rounded-xl px-4 py-3 flex items-center gap-3">
-          <span className="text-xs text-gray-600 shrink-0">⚡ GSD:</span>
+        <div
+          className="mt-6 border rounded-xl px-4 py-3 flex items-center gap-3"
+          style={{ borderColor: 'var(--c-border)' }}
+        >
+          <span className="text-xs shrink-0" style={{ color: 'var(--c-text-subtle)' }}>⚡ GSD:</span>
           <a
             href={`javascript:(function(){window.open('${window.location.origin}/?url='+encodeURIComponent(location.href),'_blank','noopener')})()`}
             onClick={e => { e.preventDefault(); alert('Drag this link to your bookmarks bar — then click it on any page to instantly shorten the URL.') }}
@@ -446,11 +502,11 @@ export default function UrlShortener({
           >
             Shorten this page ↗
           </a>
-          <span className="text-xs text-gray-700">← drag to bookmarks bar</span>
+          <span className="text-xs" style={{ color: 'var(--c-text-subtle)' }}>← drag to bookmarks bar</span>
         </div>
 
         {/* Footer */}
-        <p className="text-center text-xs text-gray-700 mt-4">
+        <p className="text-center text-xs mt-4" style={{ color: 'var(--c-text-subtle)' }}>
           Built with Spring Boot · Redis · PostgreSQL · React
         </p>
 

@@ -1,1 +1,33 @@
 @import "tailwindcss";
+
+@variant dark (&:is(.dark, .dark *));
+
+:root {
+  /* Light mode defaults */
+  --c-bg: #f9fafb;
+  --c-bg-alt: #f3f4f6;
+  --c-surface: rgba(0,0,0,0.04);
+  --c-surface-hover: rgba(0,0,0,0.08);
+  --c-text: #111827;
+  --c-text-muted: #6b7280;
+  --c-text-subtle: #9ca3af;
+  --c-border: rgba(0,0,0,0.09);
+  --c-card: #ffffff;
+  --c-modal: #ffffff;
+  --c-input: rgba(0,0,0,0.04);
+}
+
+:root.dark {
+  /* Dark mode */
+  --c-bg: #030712;
+  --c-bg-alt: #111827;
+  --c-surface: rgba(255,255,255,0.05);
+  --c-surface-hover: rgba(255,255,255,0.10);
+  --c-text: #ffffff;
+  --c-text-muted: #9ca3af;
+  --c-text-subtle: #6b7280;
+  --c-border: rgba(255,255,255,0.09);
+  --c-card: #111827;
+  --c-modal: #111827;
+  --c-input: rgba(255,255,255,0.05);
+}

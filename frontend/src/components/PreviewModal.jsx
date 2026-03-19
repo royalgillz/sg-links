@@ -9,14 +9,14 @@ function countryFlag(code) {
 function BreakdownBar({ label, count, total }) {
   return (
     <li className="flex items-center gap-2 text-xs">
-      <div className="flex-1 bg-white/5 rounded-full h-1.5 overflow-hidden">
+      <div className="flex-1 rounded-full h-1.5 overflow-hidden" style={{ background: 'var(--c-surface)' }}>
         <div
           className="bg-violet-500/70 h-full rounded-full"
           style={{ width: `${(count / total) * 100}%` }}
         />
       </div>
-      <span className="text-gray-400 shrink-0 w-16 truncate">{label}</span>
-      <span className="text-gray-600 shrink-0">{count}</span>
+      <span className="shrink-0 w-16 truncate" style={{ color: 'var(--c-text-muted)' }}>{label}</span>
+      <span className="shrink-0" style={{ color: 'var(--c-text-subtle)' }}>{count}</span>
     </li>
   )
 }
@@ -36,42 +36,51 @@ export default function PreviewModal({ code, onClose }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
-      <div className="w-full max-w-lg bg-gray-900 border border-white/10 rounded-2xl shadow-2xl overflow-hidden">
+      <div
+        className="w-full max-w-lg border rounded-2xl shadow-2xl overflow-hidden"
+        style={{ background: 'var(--c-modal)', borderColor: 'var(--c-border)' }}
+      >
 
         {/* Header */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-white/10">
+        <div className="flex items-center justify-between px-5 py-4 border-b" style={{ borderColor: 'var(--c-border)' }}>
           <div>
-            <h2 className="text-white font-semibold">Link Analytics</h2>
-            <p className="text-xs text-gray-500 font-mono mt-0.5">{code}</p>
+            <h2 className="font-semibold" style={{ color: 'var(--c-text)' }}>Link Analytics</h2>
+            <p className="text-xs font-mono mt-0.5" style={{ color: 'var(--c-text-muted)' }}>{code}</p>
           </div>
-          <button onClick={onClose} className="text-gray-600 hover:text-gray-400 text-xl transition-colors">✕</button>
+          <button
+            onClick={onClose}
+            className="text-xl transition-colors"
+            style={{ color: 'var(--c-text-subtle)' }}
+          >✕</button>
         </div>
 
-        <div className="p-5 max-h-[80vh] overflow-y-auto space-y-5
-                        [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-thumb]:rounded
-                        [&::-webkit-scrollbar-thumb]:bg-white/10">
-          {loading && <p className="text-gray-500 text-sm">Loading…</p>}
+        <div
+          className="p-5 max-h-[80vh] overflow-y-auto space-y-5
+                      [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-thumb]:rounded
+                      [&::-webkit-scrollbar-thumb]:bg-white/10"
+        >
+          {loading && <p className="text-sm" style={{ color: 'var(--c-text-muted)' }}>Loading…</p>}
           {error   && <p className="text-red-400 text-sm">{error}</p>}
 
           {stats && (<>
             {/* Destination */}
             <div>
-              <p className="text-xs text-gray-600 uppercase tracking-widest mb-1">Destination</p>
-              <p className="text-sm text-gray-300 break-all">{stats.originalUrl}</p>
+              <p className="text-xs uppercase tracking-widest mb-1" style={{ color: 'var(--c-text-subtle)' }}>Destination</p>
+              <p className="text-sm break-all" style={{ color: 'var(--c-text-muted)' }}>{stats.originalUrl}</p>
             </div>
 
             {/* Summary row */}
             <div className="flex gap-3">
-              <div className="flex-1 bg-white/5 rounded-xl px-4 py-3 text-center">
+              <div className="flex-1 rounded-xl px-4 py-3 text-center" style={{ background: 'var(--c-surface)' }}>
                 <p className="text-2xl font-bold font-mono text-violet-300">{stats.totalClicks}</p>
-                <p className="text-xs text-gray-500 mt-0.5">total clicks</p>
+                <p className="text-xs mt-0.5" style={{ color: 'var(--c-text-muted)' }}>total clicks</p>
               </div>
               {stats.expiresAt && (
-                <div className="flex-1 bg-white/5 rounded-xl px-4 py-3 text-center">
+                <div className="flex-1 rounded-xl px-4 py-3 text-center" style={{ background: 'var(--c-surface)' }}>
                   <p className="text-sm font-semibold text-amber-400">
                     {new Date(stats.expiresAt).toLocaleDateString(undefined, { dateStyle: 'medium' })}
                   </p>
-                  <p className="text-xs text-gray-500 mt-0.5">expires</p>
+                  <p className="text-xs mt-0.5" style={{ color: 'var(--c-text-muted)' }}>expires</p>
                 </div>
               )}
             </div>
@@ -85,7 +94,7 @@ export default function PreviewModal({ code, onClose }) {
                 {[{ label: 'Browsers', data: stats.browserBreakdown }, { label: 'OS', data: stats.osBreakdown }].map(({ label, data }) =>
                   data?.length > 0 && (
                     <div key={label} className="flex-1 min-w-0">
-                      <p className="text-xs text-gray-600 uppercase tracking-widest mb-2">{label}</p>
+                      <p className="text-xs uppercase tracking-widest mb-2" style={{ color: 'var(--c-text-subtle)' }}>{label}</p>
                       <ul className="space-y-1.5">
                         {data.map(e => (
                           <BreakdownBar key={e.label} label={e.label} count={e.count} total={stats.totalClicks} />
@@ -100,20 +109,20 @@ export default function PreviewModal({ code, onClose }) {
             {/* Country breakdown */}
             {stats.countryBreakdown?.length > 0 && (
               <div>
-                <p className="text-xs text-gray-600 uppercase tracking-widest mb-2">Countries</p>
+                <p className="text-xs uppercase tracking-widest mb-2" style={{ color: 'var(--c-text-subtle)' }}>Countries</p>
                 <ul className="space-y-1.5">
                   {stats.countryBreakdown.map(e => (
                     <li key={e.label} className="flex items-center gap-2 text-xs">
-                      <div className="flex-1 bg-white/5 rounded-full h-1.5 overflow-hidden">
+                      <div className="flex-1 rounded-full h-1.5 overflow-hidden" style={{ background: 'var(--c-surface)' }}>
                         <div
                           className="bg-fuchsia-500/60 h-full rounded-full"
                           style={{ width: `${(e.count / stats.totalClicks) * 100}%` }}
                         />
                       </div>
-                      <span className="text-gray-400 shrink-0 w-20 truncate">
+                      <span className="shrink-0 w-20 truncate" style={{ color: 'var(--c-text-muted)' }}>
                         {countryFlag(e.label)} {e.label}
                       </span>
-                      <span className="text-gray-600 shrink-0">{e.count}</span>
+                      <span className="shrink-0" style={{ color: 'var(--c-text-subtle)' }}>{e.count}</span>
                     </li>
                   ))}
                 </ul>
@@ -123,18 +132,18 @@ export default function PreviewModal({ code, onClose }) {
             {/* Recent clicks */}
             {stats.recentClicks?.length > 0 && (
               <div>
-                <p className="text-xs text-gray-600 uppercase tracking-widest mb-2">Recent clicks</p>
+                <p className="text-xs uppercase tracking-widest mb-2" style={{ color: 'var(--c-text-subtle)' }}>Recent clicks</p>
                 <ul className="space-y-1.5">
                   {stats.recentClicks.map((c, i) => (
                     <li key={i} className="flex items-center gap-3 text-xs">
                       <span className="w-1.5 h-1.5 rounded-full bg-violet-500/60 shrink-0" />
-                      <span className="text-gray-500 shrink-0">
+                      <span className="shrink-0" style={{ color: 'var(--c-text-muted)' }}>
                         {new Date(c.clickedAt).toLocaleString()}
                       </span>
-                      <span className="text-gray-400 truncate">
+                      <span className="truncate" style={{ color: 'var(--c-text-muted)' }}>
                         {c.referrer && c.referrer.trim()
                           ? (() => { try { return new URL(c.referrer).hostname } catch { return c.referrer } })()
-                          : <span className="text-gray-600 italic">direct</span>}
+                          : <span className="italic" style={{ color: 'var(--c-text-subtle)' }}>direct</span>}
                       </span>
                     </li>
                   ))}
@@ -143,7 +152,7 @@ export default function PreviewModal({ code, onClose }) {
             )}
 
             {stats.totalClicks === 0 && (
-              <p className="text-xs text-gray-600 italic">No clicks yet — share your link to see activity here.</p>
+              <p className="text-xs italic" style={{ color: 'var(--c-text-subtle)' }}>No clicks yet — share your link to see activity here.</p>
             )}
 
             {/* Visit button */}

@@ -10,11 +10,11 @@ function countryFlag(code) {
 function BreakdownBar({ label, count, total }) {
   return (
     <li className="flex items-center gap-2 text-xs">
-      <div className="flex-1 bg-white/5 rounded-full h-1.5 overflow-hidden">
+      <div className="flex-1 rounded-full h-1.5 overflow-hidden" style={{ background: 'var(--c-surface)' }}>
         <div className="bg-violet-500/70 h-full rounded-full" style={{ width: `${(count / total) * 100}%` }} />
       </div>
-      <span className="text-gray-400 shrink-0 w-16 truncate">{label}</span>
-      <span className="text-gray-600 shrink-0">{count}</span>
+      <span className="shrink-0 w-16 truncate" style={{ color: 'var(--c-text-muted)' }}>{label}</span>
+      <span className="shrink-0" style={{ color: 'var(--c-text-subtle)' }}>{count}</span>
     </li>
   )
 }
@@ -34,7 +34,10 @@ export default function ShareableStatsPage() {
   }, [code])
 
   return (
-    <div className="relative min-h-screen bg-gray-950 flex items-start justify-center p-4 pt-12 overflow-hidden">
+    <div
+      className="relative min-h-screen flex items-start justify-center p-4 pt-12 overflow-hidden"
+      style={{ background: 'var(--c-bg)' }}
+    >
       <ThreeBackground />
       <div className="absolute inset-0 z-10 bg-gradient-to-r from-gray-950/90 via-gray-950/60 to-transparent pointer-events-none" />
 
@@ -46,21 +49,24 @@ export default function ShareableStatsPage() {
           </a>
         </div>
 
-        <div className="bg-white/5 border border-white/10 backdrop-blur rounded-2xl overflow-hidden shadow-2xl">
+        <div
+          className="border backdrop-blur rounded-2xl overflow-hidden shadow-2xl"
+          style={{ background: 'var(--c-surface)', borderColor: 'var(--c-border)' }}
+        >
           {/* Header */}
-          <div className="px-5 py-4 border-b border-white/10">
-            <h1 className="text-white font-semibold">Link Analytics</h1>
-            <p className="text-xs text-gray-500 font-mono mt-0.5">{code}</p>
+          <div className="px-5 py-4 border-b" style={{ borderColor: 'var(--c-border)' }}>
+            <h1 className="font-semibold" style={{ color: 'var(--c-text)' }}>Link Analytics</h1>
+            <p className="text-xs font-mono mt-0.5" style={{ color: 'var(--c-text-muted)' }}>{code}</p>
           </div>
 
           <div className="p-5 space-y-5">
-            {loading && <p className="text-gray-500 text-sm">Loading…</p>}
+            {loading && <p className="text-sm" style={{ color: 'var(--c-text-muted)' }}>Loading…</p>}
             {error   && <p className="text-red-400 text-sm">{error}</p>}
 
             {stats && (<>
               {/* Destination */}
               <div>
-                <p className="text-xs text-gray-600 uppercase tracking-widest mb-1">Destination</p>
+                <p className="text-xs uppercase tracking-widest mb-1" style={{ color: 'var(--c-text-subtle)' }}>Destination</p>
                 <a
                   href={stats.originalUrl}
                   target="_blank"
@@ -73,16 +79,16 @@ export default function ShareableStatsPage() {
 
               {/* Summary */}
               <div className="flex gap-3">
-                <div className="flex-1 bg-white/5 rounded-xl px-4 py-3 text-center">
+                <div className="flex-1 rounded-xl px-4 py-3 text-center" style={{ background: 'var(--c-surface)' }}>
                   <p className="text-2xl font-bold font-mono text-violet-300">{stats.totalClicks}</p>
-                  <p className="text-xs text-gray-500 mt-0.5">total clicks</p>
+                  <p className="text-xs mt-0.5" style={{ color: 'var(--c-text-muted)' }}>total clicks</p>
                 </div>
                 {stats.expiresAt && (
-                  <div className="flex-1 bg-white/5 rounded-xl px-4 py-3 text-center">
+                  <div className="flex-1 rounded-xl px-4 py-3 text-center" style={{ background: 'var(--c-surface)' }}>
                     <p className="text-sm font-semibold text-amber-400">
                       {new Date(stats.expiresAt).toLocaleDateString(undefined, { dateStyle: 'medium' })}
                     </p>
-                    <p className="text-xs text-gray-500 mt-0.5">expires</p>
+                    <p className="text-xs mt-0.5" style={{ color: 'var(--c-text-muted)' }}>expires</p>
                   </div>
                 )}
               </div>
@@ -95,7 +101,7 @@ export default function ShareableStatsPage() {
                   {[{ label: 'Browsers', data: stats.browserBreakdown }, { label: 'OS', data: stats.osBreakdown }].map(({ label, data }) =>
                     data?.length > 0 && (
                       <div key={label} className="flex-1 min-w-0">
-                        <p className="text-xs text-gray-600 uppercase tracking-widest mb-2">{label}</p>
+                        <p className="text-xs uppercase tracking-widest mb-2" style={{ color: 'var(--c-text-subtle)' }}>{label}</p>
                         <ul className="space-y-1.5">
                           {data.map(e => (
                             <BreakdownBar key={e.label} label={e.label} count={e.count} total={stats.totalClicks} />
@@ -110,15 +116,15 @@ export default function ShareableStatsPage() {
               {/* Country breakdown */}
               {stats.countryBreakdown?.length > 0 && (
                 <div>
-                  <p className="text-xs text-gray-600 uppercase tracking-widest mb-2">Countries</p>
+                  <p className="text-xs uppercase tracking-widest mb-2" style={{ color: 'var(--c-text-subtle)' }}>Countries</p>
                   <ul className="space-y-1.5">
                     {stats.countryBreakdown.map(e => (
                       <li key={e.label} className="flex items-center gap-2 text-xs">
-                        <div className="flex-1 bg-white/5 rounded-full h-1.5 overflow-hidden">
+                        <div className="flex-1 rounded-full h-1.5 overflow-hidden" style={{ background: 'var(--c-surface)' }}>
                           <div className="bg-fuchsia-500/60 h-full rounded-full" style={{ width: `${(e.count / stats.totalClicks) * 100}%` }} />
                         </div>
-                        <span className="text-gray-400 shrink-0 w-20 truncate">{countryFlag(e.label)} {e.label}</span>
-                        <span className="text-gray-600 shrink-0">{e.count}</span>
+                        <span className="shrink-0 w-20 truncate" style={{ color: 'var(--c-text-muted)' }}>{countryFlag(e.label)} {e.label}</span>
+                        <span className="shrink-0" style={{ color: 'var(--c-text-subtle)' }}>{e.count}</span>
                       </li>
                     ))}
                   </ul>
@@ -126,14 +132,14 @@ export default function ShareableStatsPage() {
               )}
 
               {stats.totalClicks === 0 && (
-                <p className="text-xs text-gray-600 italic">No clicks yet.</p>
+                <p className="text-xs italic" style={{ color: 'var(--c-text-subtle)' }}>No clicks yet.</p>
               )}
 
               {/* Copy shareable link */}
               <button
                 onClick={() => navigator.clipboard.writeText(window.location.href)}
-                className="w-full bg-white/5 hover:bg-white/10 border border-white/10 text-gray-300
-                           font-medium py-2.5 rounded-xl text-sm transition-all"
+                className="w-full border font-medium py-2.5 rounded-xl text-sm transition-all hover:opacity-80"
+                style={{ background: 'var(--c-surface-hover)', borderColor: 'var(--c-border)', color: 'var(--c-text-muted)' }}
               >
                 Copy shareable link
               </button>

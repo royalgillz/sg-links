@@ -39,25 +39,34 @@ export default function AuthModal({ onClose, onAuth }) {
     }
   }
 
+  const inputClass = "w-full border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-violet-500 transition-all"
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
-      <div className="w-full max-w-sm bg-gray-900 border border-white/10 rounded-2xl shadow-2xl overflow-hidden">
+      <div
+        className="w-full max-w-sm border rounded-2xl shadow-2xl overflow-hidden"
+        style={{ background: 'var(--c-modal)', borderColor: 'var(--c-border)' }}
+      >
 
         {/* Header */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-white/10">
+        <div className="flex items-center justify-between px-5 py-4 border-b" style={{ borderColor: 'var(--c-border)' }}>
           <div className="flex gap-4">
             {['login', 'register'].map(m => (
               <button
                 key={m}
                 onClick={() => { setMode(m); setError(null) }}
-                className={`text-sm font-medium transition-colors capitalize
-                  ${mode === m ? 'text-white' : 'text-gray-500 hover:text-gray-300'}`}
+                className="text-sm font-medium transition-colors capitalize"
+                style={{ color: mode === m ? 'var(--c-text)' : 'var(--c-text-subtle)' }}
               >
                 {m === 'login' ? 'Sign in' : 'Create account'}
               </button>
             ))}
           </div>
-          <button onClick={onClose} className="text-gray-600 hover:text-gray-400 text-xl transition-colors">✕</button>
+          <button
+            onClick={onClose}
+            className="text-xl transition-colors"
+            style={{ color: 'var(--c-text-subtle)' }}
+          >✕</button>
         </div>
 
         <form onSubmit={handleSubmit} className="p-5 space-y-3">
@@ -72,8 +81,8 @@ export default function AuthModal({ onClose, onAuth }) {
                 required
                 minLength={3}
                 maxLength={50}
-                className="w-full bg-white/5 border border-white/10 text-white placeholder-gray-500
-                           rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-violet-500 transition-all"
+                className={inputClass}
+                style={{ background: 'var(--c-input)', borderColor: 'var(--c-border)', color: 'var(--c-text)' }}
               />
               <input
                 name="email"
@@ -82,8 +91,8 @@ export default function AuthModal({ onClose, onAuth }) {
                 value={form.email}
                 onChange={handleChange}
                 required
-                className="w-full bg-white/5 border border-white/10 text-white placeholder-gray-500
-                           rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-violet-500 transition-all"
+                className={inputClass}
+                style={{ background: 'var(--c-input)', borderColor: 'var(--c-border)', color: 'var(--c-text)' }}
               />
             </>
           )}
@@ -96,8 +105,8 @@ export default function AuthModal({ onClose, onAuth }) {
               value={form.usernameOrEmail}
               onChange={handleChange}
               required
-              className="w-full bg-white/5 border border-white/10 text-white placeholder-gray-500
-                         rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-violet-500 transition-all"
+              className={inputClass}
+              style={{ background: 'var(--c-input)', borderColor: 'var(--c-border)', color: 'var(--c-text)' }}
             />
           )}
 
@@ -110,8 +119,8 @@ export default function AuthModal({ onClose, onAuth }) {
             required
             minLength={mode === 'register' ? 8 : 1}
             maxLength={72}
-            className="w-full bg-white/5 border border-white/10 text-white placeholder-gray-500
-                       rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-violet-500 transition-all"
+            className={inputClass}
+            style={{ background: 'var(--c-input)', borderColor: 'var(--c-border)', color: 'var(--c-text)' }}
           />
 
           {error && (

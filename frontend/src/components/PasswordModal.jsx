@@ -30,16 +30,20 @@ export default function PasswordModal({ code, onClose }) {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
-      <div className="w-full max-w-sm bg-gray-900 border border-white/10 rounded-2xl shadow-2xl p-6">
+      <div
+        className="w-full max-w-sm border rounded-2xl shadow-2xl p-6"
+        style={{ background: 'var(--c-modal)', borderColor: 'var(--c-border)' }}
+      >
 
         <div className="flex items-center justify-between mb-5">
           <div>
-            <h2 className="text-white font-semibold text-lg">Password required</h2>
-            <p className="text-gray-500 text-xs mt-0.5 font-mono">{code}</p>
+            <h2 className="font-semibold text-lg" style={{ color: 'var(--c-text)' }}>Password required</h2>
+            <p className="text-xs mt-0.5 font-mono" style={{ color: 'var(--c-text-muted)' }}>{code}</p>
           </div>
           <button
             onClick={onClose}
-            className="text-gray-600 hover:text-gray-400 text-xl leading-none transition-colors"
+            className="text-xl leading-none transition-colors"
+            style={{ color: 'var(--c-text-subtle)' }}
           >
             ✕
           </button>
@@ -52,9 +56,9 @@ export default function PasswordModal({ code, onClose }) {
             placeholder="Enter password"
             value={password}
             onChange={e => setPassword(e.target.value)}
-            className="w-full bg-white/5 border border-white/10 text-white placeholder-gray-500
-                       rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-violet-500
+            className="w-full border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-violet-500
                        focus:ring-1 focus:ring-violet-500/50 transition-all"
+            style={{ background: 'var(--c-input)', borderColor: 'var(--c-border)', color: 'var(--c-text)' }}
           />
 
           {error && (

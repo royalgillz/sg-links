@@ -36,21 +36,21 @@ export default function QrCode({ url }) {
   }
 
   return (
-    <div className="flex flex-col items-center gap-2 p-4 border-t border-white/10">
-      <p className="text-xs text-gray-500 uppercase tracking-widest self-start">QR Code</p>
+    <div className="flex flex-col items-center gap-2 p-4 border-t" style={{ borderColor: 'var(--c-border)' }}>
+      <p className="text-xs uppercase tracking-widest self-start" style={{ color: 'var(--c-text-muted)' }}>QR Code</p>
       <canvas ref={canvasRef} className="rounded-lg" />
       <div className="flex gap-2">
         <button
           onClick={handleDownloadPng}
-          className="text-xs bg-white/10 hover:bg-white/15 border border-white/10
-                     text-gray-300 px-3 py-1.5 rounded-lg transition-all"
+          className="text-xs border px-3 py-1.5 rounded-lg transition-all"
+          style={{ background: 'var(--c-surface-hover)', borderColor: 'var(--c-border)', color: 'var(--c-text-muted)' }}
         >
           Download PNG
         </button>
         <button
           onClick={handleDownloadSvg}
-          className="text-xs bg-white/10 hover:bg-white/15 border border-white/10
-                     text-gray-300 px-3 py-1.5 rounded-lg transition-all"
+          className="text-xs border px-3 py-1.5 rounded-lg transition-all"
+          style={{ background: 'var(--c-surface-hover)', borderColor: 'var(--c-border)', color: 'var(--c-text-muted)' }}
         >
           Download SVG
         </button>

@@ -52,9 +52,9 @@ export default function BulkShortener() {
           placeholder={"Paste one URL per line:\nhttps://example.com/long-url-one\nhttps://example.com/long-url-two"}
           value={text}
           onChange={e => setText(e.target.value)}
-          className="w-full bg-white/5 border border-white/10 text-white placeholder-gray-600
-                     rounded-xl px-4 py-3 text-sm backdrop-blur focus:outline-none resize-none
+          className="w-full border rounded-xl px-4 py-3 text-sm backdrop-blur focus:outline-none resize-none
                      focus:border-violet-500 focus:ring-1 focus:ring-violet-500/50 transition-all"
+          style={{ background: 'var(--c-input)', borderColor: 'var(--c-border)', color: 'var(--c-text)' }}
         />
         <button
           type="submit"
@@ -77,24 +77,27 @@ export default function BulkShortener() {
       )}
 
       {results && (
-        <div className="bg-white/5 border border-white/10 backdrop-blur rounded-2xl overflow-hidden">
-          <div className="flex items-center justify-between px-4 py-3 border-b border-white/10">
-            <span className="text-xs text-gray-500 uppercase tracking-widest">
+        <div
+          className="border backdrop-blur rounded-2xl overflow-hidden"
+          style={{ background: 'var(--c-surface)', borderColor: 'var(--c-border)' }}
+        >
+          <div className="flex items-center justify-between px-4 py-3 border-b" style={{ borderColor: 'var(--c-border)' }}>
+            <span className="text-xs uppercase tracking-widest" style={{ color: 'var(--c-text-muted)' }}>
               {results.filter(r => r.shortUrl).length} / {results.length} shortened
             </span>
             <button
               onClick={handleCopyAll}
-              className="text-xs bg-white/10 hover:bg-white/15 border border-white/10
-                         text-gray-300 px-2.5 py-1 rounded-lg transition-all"
+              className="text-xs border px-2.5 py-1 rounded-lg transition-all"
+              style={{ background: 'var(--c-surface-hover)', borderColor: 'var(--c-border)', color: 'var(--c-text-muted)' }}
             >
               Copy all
             </button>
           </div>
-          <ul className="divide-y divide-white/5 max-h-72 overflow-y-auto">
+          <ul className="divide-y max-h-72 overflow-y-auto" style={{ borderColor: 'var(--c-border)' }}>
             {results.map((item, i) => (
-              <li key={i} className="flex items-center gap-3 px-4 py-2.5">
+              <li key={i} className="flex items-center gap-3 px-4 py-2.5" style={{ borderColor: 'var(--c-border)' }}>
                 <div className="flex-1 min-w-0">
-                  <p className="text-xs text-gray-600 truncate">{item.originalUrl}</p>
+                  <p className="text-xs truncate" style={{ color: 'var(--c-text-subtle)' }}>{item.originalUrl}</p>
                   {item.shortUrl
                     ? <p className="text-sm font-mono text-violet-400 truncate">{item.shortUrl}</p>
                     : <p className="text-xs text-red-400">{item.error}</p>
@@ -103,8 +106,8 @@ export default function BulkShortener() {
                 {item.shortUrl && (
                   <button
                     onClick={() => handleCopy(item.shortUrl)}
-                    className="shrink-0 text-xs px-2.5 py-1.5 rounded-lg bg-white/5
-                               hover:bg-white/10 text-gray-400 transition-colors"
+                    className="shrink-0 text-xs px-2.5 py-1.5 rounded-lg transition-colors"
+                    style={{ background: 'var(--c-surface-hover)', color: 'var(--c-text-muted)' }}
                   >
                     {copiedUrl === item.shortUrl ? '✓' : 'Copy'}
                   </button>

@@ -46,10 +46,10 @@ export default function ApiKeys() {
   }
 
   return (
-    <div className="mt-8 border border-white/5 rounded-2xl overflow-hidden">
-      <div className="px-4 py-3 border-b border-white/5 flex items-center justify-between">
-        <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-widest">API Keys</h2>
-        <span className="text-xs text-gray-600">bypass rate limiting</span>
+    <div className="mt-8 border rounded-2xl overflow-hidden" style={{ borderColor: 'var(--c-border)' }}>
+      <div className="px-4 py-3 border-b flex items-center justify-between" style={{ borderColor: 'var(--c-border)' }}>
+        <h2 className="text-sm font-semibold uppercase tracking-widest" style={{ color: 'var(--c-text-muted)' }}>API Keys</h2>
+        <span className="text-xs" style={{ color: 'var(--c-text-subtle)' }}>bypass rate limiting</span>
       </div>
 
       <div className="p-4 space-y-3">
@@ -60,8 +60,8 @@ export default function ApiKeys() {
             placeholder="Key name (optional)"
             value={name}
             onChange={e => setName(e.target.value)}
-            className="flex-1 bg-white/5 border border-white/10 text-white placeholder-gray-600
-                       rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-violet-500/50 transition-all"
+            className="flex-1 border rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-violet-500/50 transition-all"
+            style={{ background: 'var(--c-input)', borderColor: 'var(--c-border)', color: 'var(--c-text)' }}
           />
           <button
             type="submit"
@@ -79,7 +79,11 @@ export default function ApiKeys() {
             <p className="text-xs text-green-400 mb-1">Save this key — it won't be shown again</p>
             <div className="flex items-center gap-2">
               <code className="text-xs text-green-300 font-mono flex-1 truncate">{newKey}</code>
-              <button onClick={() => handleCopy(newKey, 'new')} className="text-xs text-gray-400 hover:text-white shrink-0">
+              <button
+                onClick={() => handleCopy(newKey, 'new')}
+                className="text-xs hover:text-white shrink-0 transition-colors"
+                style={{ color: 'var(--c-text-muted)' }}
+              >
                 {copiedId === 'new' ? '✓' : 'Copy'}
               </button>
             </div>
@@ -91,9 +95,13 @@ export default function ApiKeys() {
           <ul className="space-y-1.5">
             {keys.map(k => (
               <li key={k.id} className="flex items-center gap-2 text-xs">
-                <span className="flex-1 text-gray-500 font-mono truncate">{k.keyPrefix}</span>
-                <span className="text-gray-600 shrink-0">{k.name}</span>
-                <button onClick={() => handleCopy(k.key, k.id)} className="text-gray-500 hover:text-gray-300 shrink-0">
+                <span className="flex-1 font-mono truncate" style={{ color: 'var(--c-text-muted)' }}>{k.keyPrefix}</span>
+                <span className="shrink-0" style={{ color: 'var(--c-text-subtle)' }}>{k.name}</span>
+                <button
+                  onClick={() => handleCopy(k.key, k.id)}
+                  className="shrink-0 transition-colors hover:text-white"
+                  style={{ color: 'var(--c-text-muted)' }}
+                >
                   {copiedId === k.id ? '✓' : 'Copy'}
                 </button>
                 <button onClick={() => handleRevoke(k)} className="text-red-700 hover:text-red-500 shrink-0">✕</button>
@@ -102,8 +110,8 @@ export default function ApiKeys() {
           </ul>
         )}
 
-        <p className="text-xs text-gray-700">
-          Include your key as <code className="text-gray-500">X-API-Key: sk_...</code> to bypass rate limiting.
+        <p className="text-xs" style={{ color: 'var(--c-text-subtle)' }}>
+          Include your key as <code style={{ color: 'var(--c-text-muted)' }}>X-API-Key: sk_...</code> to bypass rate limiting.
         </p>
       </div>
     </div>

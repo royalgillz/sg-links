@@ -36,20 +36,20 @@ function HistoryQr({ shortUrl }) {
   }
 
   return (
-    <div className="flex items-center gap-3 mt-2 pt-2 border-t border-white/10">
+    <div className="flex items-center gap-3 mt-2 pt-2 border-t" style={{ borderColor: 'var(--c-border)' }}>
       <canvas ref={canvasRef} className="rounded" />
       <div className="flex flex-col gap-1.5">
         <button
           onClick={handleDownloadPng}
-          className="text-xs bg-white/10 hover:bg-white/15 border border-white/10
-                     text-gray-300 px-2.5 py-1.5 rounded-lg transition-all"
+          className="text-xs border px-2.5 py-1.5 rounded-lg transition-all"
+          style={{ background: 'var(--c-surface-hover)', borderColor: 'var(--c-border)', color: 'var(--c-text-muted)' }}
         >
           Download PNG
         </button>
         <button
           onClick={handleDownloadSvg}
-          className="text-xs bg-white/10 hover:bg-white/15 border border-white/10
-                     text-gray-300 px-2.5 py-1.5 rounded-lg transition-all"
+          className="text-xs border px-2.5 py-1.5 rounded-lg transition-all"
+          style={{ background: 'var(--c-surface-hover)', borderColor: 'var(--c-border)', color: 'var(--c-text-muted)' }}
         >
           Download SVG
         </button>
@@ -123,18 +123,18 @@ export default function History({ history, onDelete, onEdit, onRefreshStats, onP
   return (
     <div className="mt-8">
       <div className="flex items-center justify-between mb-3">
-        <h2 className="text-sm font-semibold text-gray-400 uppercase tracking-widest">
+        <h2 className="text-sm font-semibold uppercase tracking-widest" style={{ color: 'var(--c-text-muted)' }}>
           Link History
         </h2>
         <div className="flex items-center gap-2">
           <button
             onClick={handleExportCsv}
-            className="text-xs bg-white/5 hover:bg-white/10 border border-white/10
-                       text-gray-500 hover:text-gray-300 px-2.5 py-1 rounded-lg transition-all"
+            className="text-xs border px-2.5 py-1 rounded-lg transition-all"
+            style={{ background: 'var(--c-surface)', borderColor: 'var(--c-border)', color: 'var(--c-text-muted)' }}
           >
             Export CSV
           </button>
-          <span className="text-xs text-gray-600">{history.length} link{history.length !== 1 ? 's' : ''}</span>
+          <span className="text-xs" style={{ color: 'var(--c-text-subtle)' }}>{history.length} link{history.length !== 1 ? 's' : ''}</span>
         </div>
       </div>
 
@@ -148,8 +148,11 @@ export default function History({ history, onDelete, onEdit, onRefreshStats, onP
           return (
             <div
               key={entry.shortCode}
-              className={`bg-white/5 border rounded-xl px-4 py-3
-                ${expired ? 'border-red-900/40 opacity-60' : 'border-white/10'}`}
+              className={`border rounded-xl px-4 py-3 ${expired ? 'opacity-60' : ''}`}
+              style={{
+                background: 'var(--c-surface)',
+                borderColor: expired ? 'rgba(127,29,29,0.4)' : 'var(--c-border)',
+              }}
             >
               <div className="flex items-start gap-3">
                 {/* Favicon + click badge */}
@@ -171,7 +174,7 @@ export default function History({ history, onDelete, onEdit, onRefreshStats, onP
                     <span className="text-lg font-bold text-violet-300 font-mono leading-none">
                       {clicks}
                     </span>
-                    <p className="text-xs text-gray-600 leading-none mt-0.5">clicks</p>
+                    <p className="text-xs leading-none mt-0.5" style={{ color: 'var(--c-text-subtle)' }}>clicks</p>
                   </div>
                 </div>
 
@@ -183,7 +186,7 @@ export default function History({ history, onDelete, onEdit, onRefreshStats, onP
                       {entry.shortUrl}
                     </span>
                     {entry.passwordProtected && (
-                      <span className="shrink-0 text-xs text-gray-500" title="Password protected">🔒</span>
+                      <span className="shrink-0 text-xs" style={{ color: 'var(--c-text-muted)' }} title="Password protected">🔒</span>
                     )}
                     {expired && (
                       <span className="shrink-0 text-xs text-red-500 bg-red-950/40 border border-red-900/40 px-1.5 py-0.5 rounded">
@@ -206,9 +209,9 @@ export default function History({ history, onDelete, onEdit, onRefreshStats, onP
                         onChange={e => setEditUrl(e.target.value)}
                         onKeyDown={e => { if (e.key === 'Enter') saveEdit(entry.shortCode); if (e.key === 'Escape') setEditingCode(null) }}
                         autoFocus
-                        className="flex-1 min-w-0 bg-white/5 border border-violet-500/50 text-white
-                                   rounded-lg px-2.5 py-1.5 text-xs focus:outline-none focus:ring-1
-                                   focus:ring-violet-500/50 font-mono"
+                        className="flex-1 min-w-0 border border-violet-500/50 rounded-lg px-2.5 py-1.5 text-xs
+                                   focus:outline-none focus:ring-1 focus:ring-violet-500/50 font-mono"
+                        style={{ background: 'var(--c-input)', color: 'var(--c-text)' }}
                       />
                       <button
                         onClick={() => saveEdit(entry.shortCode)}
@@ -220,22 +223,22 @@ export default function History({ history, onDelete, onEdit, onRefreshStats, onP
                       </button>
                       <button
                         onClick={() => setEditingCode(null)}
-                        className="text-xs px-2 py-1.5 rounded-lg bg-white/5 hover:bg-white/10
-                                   text-gray-500 transition-colors shrink-0"
+                        className="text-xs px-2 py-1.5 rounded-lg transition-colors shrink-0"
+                        style={{ background: 'var(--c-surface-hover)', color: 'var(--c-text-muted)' }}
                       >
                         ✕
                       </button>
                     </div>
                   ) : (
-                    <p className="text-xs text-gray-600 truncate mt-0.5">{entry.originalUrl}</p>
+                    <p className="text-xs truncate mt-0.5" style={{ color: 'var(--c-text-subtle)' }}>{entry.originalUrl}</p>
                   )}
 
                   {/* Action buttons */}
                   <div className="flex items-center gap-1.5 mt-2 flex-wrap">
                     <button
                       onClick={() => onPreview(entry.shortCode)}
-                      className="text-xs px-2.5 py-1.5 rounded-lg bg-white/5 hover:bg-white/10
-                                 text-gray-400 transition-colors"
+                      className="text-xs px-2.5 py-1.5 rounded-lg transition-colors"
+                      style={{ background: 'var(--c-surface-hover)', color: 'var(--c-text-muted)' }}
                     >
                       Stats
                     </button>
@@ -244,7 +247,8 @@ export default function History({ history, onDelete, onEdit, onRefreshStats, onP
                       className={`text-xs px-2.5 py-1.5 rounded-lg transition-colors
                         ${isEditing
                           ? 'bg-violet-700/40 text-violet-300 border border-violet-600/40'
-                          : 'bg-white/5 hover:bg-white/10 text-gray-400'}`}
+                          : ''}`}
+                      style={!isEditing ? { background: 'var(--c-surface-hover)', color: 'var(--c-text-muted)' } : {}}
                     >
                       Edit
                     </button>
@@ -253,14 +257,15 @@ export default function History({ history, onDelete, onEdit, onRefreshStats, onP
                       className={`text-xs px-2.5 py-1.5 rounded-lg transition-colors
                         ${qrOpen
                           ? 'bg-violet-700/40 text-violet-300 border border-violet-600/40'
-                          : 'bg-white/5 hover:bg-white/10 text-gray-400'}`}
+                          : ''}`}
+                      style={!qrOpen ? { background: 'var(--c-surface-hover)', color: 'var(--c-text-muted)' } : {}}
                     >
                       QR
                     </button>
                     <button
                       onClick={() => handleCopy(entry.shortUrl, entry.shortCode)}
-                      className="text-xs px-2.5 py-1.5 rounded-lg bg-white/5 hover:bg-white/10
-                                 text-gray-400 transition-colors"
+                      className="text-xs px-2.5 py-1.5 rounded-lg transition-colors"
+                      style={{ background: 'var(--c-surface-hover)', color: 'var(--c-text-muted)' }}
                     >
                       {copiedCode === entry.shortCode ? '✓' : 'Copy'}
                     </button>

@@ -16,12 +16,15 @@ export default function LinkInBioPage() {
   }, [username])
 
   return (
-    <div className="relative min-h-screen bg-gray-950 flex items-start justify-center p-4 pt-16 overflow-hidden">
+    <div
+      className="relative min-h-screen flex items-start justify-center p-4 pt-16 overflow-hidden"
+      style={{ background: 'var(--c-bg)' }}
+    >
       <ThreeBackground />
       <div className="absolute inset-0 z-10 bg-gradient-to-r from-gray-950/90 via-gray-950/60 to-transparent pointer-events-none" />
 
       <div className="relative z-20 w-full max-w-sm">
-        {loading && <p className="text-gray-500 text-sm text-center">Loading…</p>}
+        {loading && <p className="text-sm text-center" style={{ color: 'var(--c-text-muted)' }}>Loading…</p>}
         {error   && <p className="text-red-400 text-sm text-center">{error}</p>}
 
         {data && (
@@ -32,13 +35,13 @@ export default function LinkInBioPage() {
                               flex items-center justify-center text-2xl font-bold text-white mx-auto mb-3">
                 {data.username.charAt(0).toUpperCase()}
               </div>
-              <h1 className="text-xl font-bold text-white">@{data.username}</h1>
+              <h1 className="text-xl font-bold" style={{ color: 'var(--c-text)' }}>@{data.username}</h1>
             </div>
 
             {/* Links */}
             <div className="space-y-3">
               {data.links.length === 0 && (
-                <p className="text-gray-600 text-sm text-center italic">No public links yet.</p>
+                <p className="text-sm text-center italic" style={{ color: 'var(--c-text-subtle)' }}>No public links yet.</p>
               )}
               {data.links.map((link, i) => (
                 <a
@@ -46,8 +49,8 @@ export default function LinkInBioPage() {
                   href={link.shortUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="block bg-white/5 hover:bg-white/10 border border-white/10 hover:border-violet-500/30
-                             rounded-2xl px-5 py-4 transition-all group"
+                  className="block border hover:border-violet-500/30 rounded-2xl px-5 py-4 transition-all group"
+                  style={{ background: 'var(--c-surface)', borderColor: 'var(--c-border)' }}
                 >
                   <div className="flex items-center gap-3">
                     <img
@@ -57,22 +60,22 @@ export default function LinkInBioPage() {
                       onError={e => { e.target.style.display = 'none' }}
                     />
                     <div className="flex-1 min-w-0">
-                      <p className="text-white text-sm font-medium truncate group-hover:text-violet-300 transition-colors">
+                      <p className="text-sm font-medium truncate group-hover:text-violet-300 transition-colors" style={{ color: 'var(--c-text)' }}>
                         {link.title || link.domain}
                       </p>
                       {link.description && (
-                        <p className="text-gray-500 text-xs truncate mt-0.5">{link.description}</p>
+                        <p className="text-xs truncate mt-0.5" style={{ color: 'var(--c-text-muted)' }}>{link.description}</p>
                       )}
                     </div>
-                    <span className="text-gray-600 text-xs shrink-0">{link.clickCount} clicks</span>
+                    <span className="text-xs shrink-0" style={{ color: 'var(--c-text-subtle)' }}>{link.clickCount} clicks</span>
                   </div>
                 </a>
               ))}
             </div>
 
             {/* Footer */}
-            <p className="text-center text-xs text-gray-700 mt-8">
-              <a href="/" className="hover:text-gray-500 transition-colors">Create your own link page →</a>
+            <p className="text-center text-xs mt-8" style={{ color: 'var(--c-text-subtle)' }}>
+              <a href="/" className="hover:text-violet-400 transition-colors">Create your own link page →</a>
             </p>
           </>
         )}

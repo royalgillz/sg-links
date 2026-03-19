@@ -6,8 +6,10 @@ import ErrorPage from './components/ErrorPage'
 import ShareableStatsPage from './components/ShareableStatsPage'
 import LinkInBioPage from './components/LinkInBioPage'
 import AuthModal from './components/AuthModal'
+import LandingContent from './components/LandingContent'
 import { useHistory } from './hooks/useHistory'
 import { useAuth } from './hooks/useAuth'
+import { useTheme } from './hooks/useTheme'
 
 // Pathname-based routing for shareable pages
 const path = window.location.pathname
@@ -22,6 +24,8 @@ export default function App() {
   // Route to standalone pages based on pathname
   if (path.startsWith('/s/')) return <ShareableStatsPage />
   if (path.startsWith('/u/')) return <LinkInBioPage />
+
+  const { isDark, toggleTheme } = useTheme()
 
   const [url, setUrl] = useState('')
   const [alias, setAlias] = useState('')
@@ -229,7 +233,10 @@ export default function App() {
         isLoggedIn={isLoggedIn}
         onShowAuth={() => setShowAuthModal(true)}
         onLogout={logout}
+        isDark={isDark}
+        toggleTheme={toggleTheme}
       />
+      <LandingContent isDark={isDark} />
     </>
   )
 }
