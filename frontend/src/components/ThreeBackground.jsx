@@ -132,5 +132,11 @@ export default function ThreeBackground() {
     }
   }, [])
 
-  return <div ref={mountRef} className="absolute inset-0 z-0" />
+  return (
+    <div
+      ref={mountRef}
+      className="three-bg absolute inset-0 z-0 pointer-events-none"
+      style={{ opacity: 'var(--c-canvas-opacity)', transition: 'opacity 0.4s ease' }}
+    />
+  )
 }

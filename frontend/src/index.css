@@ -2,32 +2,84 @@
 
 @variant dark (&:is(.dark, .dark *));
 
+/* ─── Light mode (default) ──────────────────────────────────── */
 :root {
-  /* Light mode defaults */
-  --c-bg: #f9fafb;
-  --c-bg-alt: #f3f4f6;
-  --c-surface: rgba(0,0,0,0.04);
-  --c-surface-hover: rgba(0,0,0,0.08);
-  --c-text: #111827;
-  --c-text-muted: #6b7280;
-  --c-text-subtle: #9ca3af;
-  --c-border: rgba(0,0,0,0.09);
-  --c-card: #ffffff;
-  --c-modal: #ffffff;
-  --c-input: rgba(0,0,0,0.04);
+  /* Backgrounds */
+  --c-bg:             #f8fafc;   /* slate-50  */
+  --c-bg-alt:         #f1f5f9;   /* slate-100 */
+
+  /* Surfaces & inputs */
+  --c-surface:        #f1f5f9;   /* solid — panels actually visible   */
+  --c-surface-hover:  #e2e8f0;   /* slate-200                         */
+  --c-input:          #ffffff;   /* solid white — inputs readable      */
+  --c-input-border:   #cbd5e1;   /* slate-300 — visible borders        */
+  --c-card:           #ffffff;
+  --c-modal:          #ffffff;
+
+  /* Text — all WCAG AA on white/slate-50 */
+  --c-text:           #0f172a;   /* slate-900  19.7:1 ✓ */
+  --c-text-muted:     #475569;   /* slate-600   7.2:1 ✓ */
+  --c-text-subtle:    #64748b;   /* slate-500   4.6:1 ✓ */
+
+  /* Borders */
+  --c-border:         #e2e8f0;   /* slate-200 — solid, visible         */
+
+  /* Accent badges & ghost buttons (violet) */
+  --c-badge-bg:       rgba(109,40,217,0.07);
+  --c-badge-border:   rgba(109,40,217,0.20);
+  --c-badge-text:     #5b21b6;   /* violet-800  7.9:1 ✓ */
+  --c-ghost-bg:       rgba(109,40,217,0.07);
+  --c-ghost-border:   rgba(109,40,217,0.25);
+  --c-ghost-text:     #5b21b6;
+
+  /* Semantic — success */
+  --c-success-bg:     #f0fdf4;
+  --c-success-border: #bbf7d0;
+  --c-success-text:   #166534;   /* green-800  7.2:1 ✓ */
+  --c-success-code:   #15803d;   /* green-700        ✓ */
+
+  /* Canvas (Three.js) */
+  --c-canvas-opacity: 0.18;      /* subtle decorative accent in light  */
+  --c-overlay-from:   rgba(248,250,252,0.94);
+  --c-overlay-mid:    rgba(248,250,252,0.55);
 }
 
+/* ─── Dark mode ──────────────────────────────────────────────── */
 :root.dark {
-  /* Dark mode */
-  --c-bg: #030712;
-  --c-bg-alt: #111827;
-  --c-surface: rgba(255,255,255,0.05);
-  --c-surface-hover: rgba(255,255,255,0.10);
-  --c-text: #ffffff;
-  --c-text-muted: #9ca3af;
-  --c-text-subtle: #6b7280;
-  --c-border: rgba(255,255,255,0.09);
-  --c-card: #111827;
-  --c-modal: #111827;
-  --c-input: rgba(255,255,255,0.05);
+  --c-bg:             #030712;
+  --c-bg-alt:         #0f172a;
+
+  --c-surface:        rgba(255,255,255,0.06);
+  --c-surface-hover:  rgba(255,255,255,0.12);
+  --c-input:          rgba(255,255,255,0.05);
+  --c-input-border:   rgba(255,255,255,0.12);
+  --c-card:           #0f172a;
+  --c-modal:          #111827;
+
+  --c-text:           #f8fafc;
+  --c-text-muted:     #94a3b8;
+  --c-text-subtle:    #64748b;
+
+  --c-border:         rgba(255,255,255,0.10);
+
+  --c-badge-bg:       rgba(46,16,101,0.60);
+  --c-badge-border:   rgba(91,33,182,0.50);
+  --c-badge-text:     #c4b5fd;   /* violet-300 */
+  --c-ghost-bg:       rgba(46,16,101,0.30);
+  --c-ghost-border:   rgba(91,33,182,0.50);
+  --c-ghost-text:     #c4b5fd;
+
+  --c-success-bg:     rgba(20,83,45,0.40);
+  --c-success-border: rgba(22,101,52,0.40);
+  --c-success-text:   #4ade80;
+  --c-success-code:   #86efac;
+
+  --c-canvas-opacity: 1;
+  --c-overlay-from:   rgba(3,7,18,0.90);
+  --c-overlay-mid:    rgba(3,7,18,0.60);
+}
+
+/* ─── Three.js canvas — hide on mobile so it never overlaps CTA ─ */
+@media (max-width: 639px) {
+  .three-bg { display: none; }
 }

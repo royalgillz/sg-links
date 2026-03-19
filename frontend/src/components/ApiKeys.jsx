@@ -66,8 +66,8 @@ export default function ApiKeys() {
           <button
             type="submit"
             disabled={loading}
-            className="bg-violet-600/30 hover:bg-violet-600/50 border border-violet-600/40
-                       text-violet-300 px-3 py-2 rounded-lg text-xs transition-all disabled:opacity-50"
+            className="px-3 py-2 rounded-lg text-xs transition-all disabled:opacity-50 hover:opacity-80"
+            style={{ background: 'var(--c-ghost-bg)', border: '1px solid var(--c-ghost-border)', color: 'var(--c-ghost-text)' }}
           >
             {loading ? '…' : 'Generate'}
           </button>
@@ -75,14 +75,14 @@ export default function ApiKeys() {
 
         {/* New key banner — shown once */}
         {newKey && (
-          <div className="bg-green-950/40 border border-green-800/40 rounded-lg px-3 py-2">
-            <p className="text-xs text-green-400 mb-1">Save this key — it won't be shown again</p>
+          <div className="rounded-lg px-3 py-2" style={{ background: 'var(--c-success-bg)', border: '1px solid var(--c-success-border)' }}>
+            <p className="text-xs mb-1" style={{ color: 'var(--c-success-text)' }}>Save this key — it won't be shown again</p>
             <div className="flex items-center gap-2">
-              <code className="text-xs text-green-300 font-mono flex-1 truncate">{newKey}</code>
+              <code className="text-xs font-mono flex-1 truncate" style={{ color: 'var(--c-success-code)' }}>{newKey}</code>
               <button
                 onClick={() => handleCopy(newKey, 'new')}
-                className="text-xs hover:text-white shrink-0 transition-colors"
-                style={{ color: 'var(--c-text-muted)' }}
+                className="text-xs shrink-0 transition-colors hover:opacity-70"
+                style={{ color: 'var(--c-success-text)' }}
               >
                 {copiedId === 'new' ? '✓' : 'Copy'}
               </button>

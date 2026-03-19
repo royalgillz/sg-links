@@ -58,8 +58,11 @@ export default function UrlShortener({
       {/* 3D background */}
       <ThreeBackground />
 
-      {/* Gradient overlay */}
-      <div className="absolute inset-0 z-10 bg-gradient-to-r from-gray-950/90 via-gray-950/60 to-transparent pointer-events-none" />
+      {/* Gradient overlay — theme-aware via CSS variables */}
+      <div
+        className="absolute inset-0 z-10 pointer-events-none"
+        style={{ background: 'linear-gradient(to right, var(--c-overlay-from), var(--c-overlay-mid), transparent)' }}
+      />
 
       {/* Card */}
       <div className="relative z-20 w-full max-w-lg">
@@ -91,8 +94,8 @@ export default function UrlShortener({
           ) : (
             <button
               onClick={onShowAuth}
-              className="text-xs text-violet-400 hover:text-violet-300 border border-violet-800/50
-                         bg-violet-950/30 px-3 py-1.5 rounded-lg transition-all"
+              className="text-xs px-3 py-1.5 rounded-lg transition-all hover:opacity-80"
+              style={{ color: 'var(--c-ghost-text)', background: 'var(--c-ghost-bg)', border: '1px solid var(--c-ghost-border)' }}
             >
               Sign in / Register
             </button>
@@ -101,9 +104,11 @@ export default function UrlShortener({
 
         {/* Badge */}
         <div className="flex justify-center mb-6">
-          <span className="inline-flex items-center gap-1.5 text-xs font-medium text-violet-300
-                           bg-violet-950/60 border border-violet-800/50 rounded-full px-3 py-1 backdrop-blur">
-            <span className="w-1.5 h-1.5 rounded-full bg-violet-400 animate-pulse" />
+          <span
+            className="inline-flex items-center gap-1.5 text-xs font-medium rounded-full px-3 py-1 backdrop-blur"
+            style={{ color: 'var(--c-badge-text)', background: 'var(--c-badge-bg)', border: '1px solid var(--c-badge-border)' }}
+          >
+            <span className="w-1.5 h-1.5 rounded-full bg-violet-500 animate-pulse" />
             Instant link shortening
           </span>
         </div>
