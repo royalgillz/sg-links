@@ -181,7 +181,7 @@ Open http://localhost:5173
 ./mvnw test -Dtest=Base62EncoderTest
 
 # Integration tests — Testcontainers spins up Postgres + Redis automatically
-./mvnw test -Dtest="UrlShortenerApplicationTests,UrlShortenerIntegrationTest"
+./mvnw test -Dtest="SgLinksApplicationTests,SgLinksIntegrationTest"
 
 # Playwright E2E — requires a built frontend
 cd frontend

@@ -5,16 +5,16 @@
 /* ─── Light mode (default) ──────────────────────────────────── */
 :root {
   /* Backgrounds */
-  --c-bg:             #f8fafc;   /* slate-50  */
-  --c-bg-alt:         #f1f5f9;   /* slate-100 */
+  --c-bg:             #f5f0e8;   /* warm beige                        */
+  --c-bg-alt:         #ede8df;   /* slightly darker beige             */
 
   /* Surfaces & inputs */
-  --c-surface:        #f1f5f9;   /* solid — panels actually visible   */
-  --c-surface-hover:  #e2e8f0;   /* slate-200                         */
-  --c-input:          #ffffff;   /* solid white — inputs readable      */
-  --c-input-border:   #cbd5e1;   /* slate-300 — visible borders        */
-  --c-card:           #ffffff;
-  --c-modal:          #ffffff;
+  --c-surface:        #ede8df;   /* solid — panels actually visible   */
+  --c-surface-hover:  #e0d9ce;   /* hovered surface                   */
+  --c-input:          #faf8f4;   /* warm off-white — inputs readable  */
+  --c-input-border:   #c9bfb0;   /* warm tan border                   */
+  --c-card:           #faf8f4;
+  --c-modal:          #faf8f4;
 
   /* Text — all WCAG AA on white/slate-50 */
   --c-text:           #0f172a;   /* slate-900  19.7:1 ✓ */
@@ -40,8 +40,8 @@
 
   /* Canvas (Three.js) */
   --c-canvas-opacity: 0.18;      /* subtle decorative accent in light  */
-  --c-overlay-from:   rgba(248,250,252,0.94);
-  --c-overlay-mid:    rgba(248,250,252,0.55);
+  --c-overlay-from:   rgba(245,240,232,0.94);
+  --c-overlay-mid:    rgba(245,240,232,0.55);
 }
 
 /* ─── Dark mode ──────────────────────────────────────────────── */
