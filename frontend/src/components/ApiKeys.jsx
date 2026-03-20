@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 
-const STORAGE_KEY = 'api_keys'
+const STORAGE_KEY = 'sglinks_api_keys'
 
 function loadKeys() {
   try { return JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]') } catch { return [] }

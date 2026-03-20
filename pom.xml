@@ -12,11 +12,11 @@
     <relativePath/>
   </parent>
 
-  <groupId>com.urlshortener</groupId>
-  <artifactId>url-shortener</artifactId>
+  <groupId>com.sglinks</groupId>
+  <artifactId>sg-links</artifactId>
   <version>0.0.1-SNAPSHOT</version>
-  <name>url-shortener</name>
-  <description>Portfolio URL shortener with analytics</description>
+  <name>sg-links</name>
+  <description>SG Links — a full-featured link shortener by Sehaj Gill</description>
 
   <properties>
     <java.version>17</java.version>

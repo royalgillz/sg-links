@@ -1,0 +1,18 @@
+package com.sglinks.config;
+
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.info.Info;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+public class OpenApiConfig {
+
+    @Bean
+    public OpenAPI openAPI() {
+        return new OpenAPI().info(new Info()
+                .title("SG Links API")
+                .description("Shorten URLs, track clicks, set expiry, password-protect links, and bulk shorten.")
+                .version("1.0.0"));
+    }
+}

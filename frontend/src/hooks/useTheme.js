@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 
-const STORAGE_KEY = 'url_shortener_theme'
+const STORAGE_KEY = 'sglinks_theme'
 
 export function useTheme() {
   const [isDark, setIsDark] = useState(() => {

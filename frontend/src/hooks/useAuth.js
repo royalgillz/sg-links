@@ -1,7 +1,7 @@
 import { useState, useCallback } from 'react'
 
-const TOKEN_KEY = 'url_shortener_token'
-const USER_KEY = 'url_shortener_user'
+const TOKEN_KEY = 'sglinks_token'
+const USER_KEY = 'sglinks_user'
 
 export function useAuth() {
   const [token, setToken] = useState(() => localStorage.getItem(TOKEN_KEY))

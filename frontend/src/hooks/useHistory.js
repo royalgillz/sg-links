@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 
-const STORAGE_KEY = 'url_shortener_history'
+const STORAGE_KEY = 'sglinks_history'
 
 function load() {
   try {

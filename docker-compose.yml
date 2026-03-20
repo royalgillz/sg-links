@@ -1,9 +1,9 @@
 services:
   postgres:
     image: postgres:16-alpine
-    container_name: urlshortener-postgres
+    container_name: sglinks-postgres
     environment:
-      POSTGRES_DB: urlshortener
+      POSTGRES_DB: sglinks
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     ports:
@@ -18,7 +18,7 @@ services:
 
   redis:
     image: redis:7-alpine
-    container_name: urlshortener-redis
+    container_name: sglinks-redis
     ports:
       - "6379:6379"
     healthcheck:

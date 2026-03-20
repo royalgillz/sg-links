@@ -1,12 +1,12 @@
-# URL Shortener
+# SG Links
 
-A full-featured URL shortener with analytics, user accounts, AI slug suggestions, and a browser extension. Built with Spring Boot, React, PostgreSQL, and Redis. Deployed on Railway.
+SG Links — a full-featured link shortener by Sehaj Gill with analytics, user accounts, AI slug suggestions, and a browser extension. Built with Spring Boot, React, PostgreSQL, and Redis. Deployed on Railway.
 
-**Live:** https://url-shortener-production-sehaj.up.railway.app
+**Live:** https://sg-links.up.railway.app
 
-**API docs:** https://url-shortener-production-sehaj.up.railway.app/swagger-ui.html
+**API docs:** https://sg-links.up.railway.app/swagger-ui.html
 
-[![App screenshot](docs/screenshot.png)](https://url-shortener-production-sehaj.up.railway.app)
+[![App screenshot](docs/screenshot.png)](https://sg-links.up.railway.app)
 
 ## Features
 

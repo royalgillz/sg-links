@@ -27,7 +27,7 @@ const FAQ_ITEMS = [
       <>
         Yes,{' '}
         <a
-          href="https://github.com/royalgillz/url-shortener"
+          href="https://github.com/royalgillz/sg-links"
           target="_blank"
           rel="noopener noreferrer"
           className="text-violet-400 hover:text-violet-300 underline underline-offset-2 transition-colors"
@@ -249,14 +249,14 @@ export default function LandingContent({ isDark }) {
       >
         <div className="max-w-3xl mx-auto px-4 py-8 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div>
-            <p className="font-semibold text-sm" style={{ color: 'var(--c-text)' }}>URL Shortener</p>
+            <p className="font-semibold text-sm" style={{ color: 'var(--c-text)' }}>SG Links</p>
             <p className="text-xs mt-0.5" style={{ color: 'var(--c-text-muted)' }}>
               Open source · Built with Spring Boot &amp; React
             </p>
           </div>
           <div className="flex items-center gap-4 text-xs" style={{ color: 'var(--c-text-muted)' }}>
             <a
-              href="https://github.com/royalgillz/url-shortener"
+              href="https://github.com/royalgillz/sg-links"
               target="_blank"
               rel="noopener noreferrer"
               className="hover:text-violet-400 transition-colors"

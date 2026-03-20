@@ -1,10 +1,10 @@
 spring:
   application:
-    name: url-shortener
+    name: sg-links
 
   datasource:
     # Railway injects PGHOST, PGPORT, PGDATABASE, PGUSER, PGPASSWORD
-    url: jdbc:postgresql://${PGHOST:localhost}:${PGPORT:5432}/${PGDATABASE:urlshortener}
+    url: jdbc:postgresql://${PGHOST:localhost}:${PGPORT:5432}/${PGDATABASE:sglinks}
     username: ${PGUSER:postgres}
     password: ${PGPASSWORD:postgres}
     driver-class-name: org.postgresql.Driver
@@ -39,7 +39,7 @@ management:
       show-details: always
   metrics:
     tags:
-      application: url-shortener
+      application: sg-links
 
 app:
   # Set APP_BASE_URL to your Railway domain, e.g. https://your-app.up.railway.app

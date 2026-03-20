@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "URL Shortener",
+  "name": "SG Links",
   "version": "1.0.0",
   "description": "Shorten the current tab's URL instantly.",
   "permissions": ["activeTab", "clipboardWrite"],
