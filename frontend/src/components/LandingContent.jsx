@@ -72,7 +72,7 @@ function FaqItem({ q, a }) {
   )
 }
 
-export default function LandingContent({ isDark }) {
+export default function LandingContent() {
   const [globalStats, setGlobalStats] = useState(null)
   const [statsLoading, setStatsLoading] = useState(true)
 

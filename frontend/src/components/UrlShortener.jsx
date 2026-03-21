@@ -12,7 +12,6 @@ export default function UrlShortener({
   result, stats, error, loading, copied, handleSubmit, handleCopy, handleUrlPaste,
   history, onDelete, onEdit, onRefreshStats, onPreview,
   user, isLoggedIn, onShowAuth, onLogout,
-  isDark, toggleTheme,
 }) {
   const [mode, setMode] = useState('single')
   const [showOg, setShowOg] = useState(false)
@@ -67,15 +66,8 @@ export default function UrlShortener({
       {/* Card */}
       <div className="relative z-20 w-full max-w-lg">
 
-        {/* Top bar: theme toggle + auth */}
+        {/* Top bar: auth */}
         <div className="flex justify-end items-center gap-2 mb-3">
-          <button
-            onClick={toggleTheme}
-            title={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
-            className="text-xs text-gray-500 hover:text-gray-300 transition-colors px-2 py-1.5"
-          >
-            {isDark ? '☀️' : '🌙'}
-          </button>
           {isLoggedIn ? (
             <div className="flex items-center gap-3">
               <span className="text-xs" style={{ color: 'var(--c-text-subtle)' }}>
