@@ -2,12 +2,17 @@ spring:
   application:
     name: sg-links
 
+  main:
+    lazy-initialization: true
+
   datasource:
     # Railway injects PGHOST, PGPORT, PGDATABASE, PGUSER, PGPASSWORD
     url: jdbc:postgresql://${PGHOST:localhost}:${PGPORT:5432}/${PGDATABASE:sglinks}
     username: ${PGUSER:postgres}
     password: ${PGPASSWORD:postgres}
     driver-class-name: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 3
 
   jpa:
     hibernate:
