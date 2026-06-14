@@ -6,8 +6,9 @@ spring:
     lazy-initialization: true
 
   datasource:
-    # Railway injects PGHOST, PGPORT, PGDATABASE, PGUSER, PGPASSWORD
-    url: jdbc:postgresql://${PGHOST:localhost}:${PGPORT:5432}/${PGDATABASE:sglinks}
+    # host/db/user/password come from the Postgres provider (Neon, local docker, etc).
+    # PGSSLMODE is "disable" locally and "require" for managed providers like Neon.
+    url: jdbc:postgresql://${PGHOST:localhost}:${PGPORT:5432}/${PGDATABASE:sglinks}?sslmode=${PGSSLMODE:disable}
     username: ${PGUSER:postgres}
     password: ${PGPASSWORD:postgres}
     driver-class-name: org.postgresql.Driver
@@ -28,7 +29,7 @@ spring:
 
   data:
     redis:
-      # Railway injects REDIS_URL as redis://:password@host:port
+      # local docker uses redis://; managed TLS providers like Upstash use rediss://
       url: ${REDIS_URL:redis://localhost:6379}
 
 server:

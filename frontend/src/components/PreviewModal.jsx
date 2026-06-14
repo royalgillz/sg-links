@@ -9,9 +9,9 @@ function countryFlag(code) {
 function BreakdownBar({ label, count, total }) {
   return (
     <li className="flex items-center gap-2 text-xs">
-      <div className="flex-1 rounded-full h-1.5 overflow-hidden" style={{ background: 'var(--c-surface)' }}>
+      <div className="flex-1 h-1.5 overflow-hidden" style={{ background: 'var(--c-surface)' }}>
         <div
-          className="bg-violet-500/70 h-full rounded-full"
+          className="bg-[var(--c-accent)] h-full"
           style={{ width: `${(count / total) * 100}%` }}
         />
       </div>
@@ -37,14 +37,14 @@ export default function PreviewModal({ code, onClose }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
       <div
-        className="w-full max-w-lg border rounded-2xl shadow-2xl overflow-hidden"
+        className="w-full max-w-lg border-2 hard-lg overflow-hidden"
         style={{ background: 'var(--c-modal)', borderColor: 'var(--c-border)' }}
       >
 
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-4 border-b" style={{ borderColor: 'var(--c-border)' }}>
           <div>
-            <h2 className="font-semibold" style={{ color: 'var(--c-text)' }}>Link Analytics</h2>
+            <h2 className="font-display font-extrabold text-lg" style={{ color: 'var(--c-text)' }}>link analytics</h2>
             <p className="text-xs font-mono mt-0.5" style={{ color: 'var(--c-text-muted)' }}>{code}</p>
           </div>
           <button
@@ -59,7 +59,7 @@ export default function PreviewModal({ code, onClose }) {
                       [&::-webkit-scrollbar]:w-1 [&::-webkit-scrollbar-thumb]:rounded
                       [&::-webkit-scrollbar-thumb]:bg-white/10"
         >
-          {loading && <p className="text-sm" style={{ color: 'var(--c-text-muted)' }}>Loading…</p>}
+          {loading && <p className="text-sm" style={{ color: 'var(--c-text-muted)' }}>loading...</p>}
           {error   && <p className="text-red-400 text-sm">{error}</p>}
 
           {stats && (<>
@@ -71,12 +71,12 @@ export default function PreviewModal({ code, onClose }) {
 
             {/* Summary row */}
             <div className="flex gap-3">
-              <div className="flex-1 rounded-xl px-4 py-3 text-center" style={{ background: 'var(--c-surface)' }}>
-                <p className="text-2xl font-bold font-mono text-violet-300">{stats.totalClicks}</p>
+              <div className="flex-1 px-4 py-3 text-center border-2" style={{ background: 'var(--c-surface)', borderColor: 'var(--c-border)' }}>
+                <p className="text-2xl font-bold font-mono text-[var(--c-accent-text)]">{stats.totalClicks}</p>
                 <p className="text-xs mt-0.5" style={{ color: 'var(--c-text-muted)' }}>total clicks</p>
               </div>
               {stats.expiresAt && (
-                <div className="flex-1 rounded-xl px-4 py-3 text-center" style={{ background: 'var(--c-surface)' }}>
+                <div className="flex-1 px-4 py-3 text-center border-2" style={{ background: 'var(--c-surface)', borderColor: 'var(--c-border)' }}>
                   <p className="text-sm font-semibold text-amber-400">
                     {new Date(stats.expiresAt).toLocaleDateString(undefined, { dateStyle: 'medium' })}
                   </p>
@@ -113,9 +113,9 @@ export default function PreviewModal({ code, onClose }) {
                 <ul className="space-y-1.5">
                   {stats.countryBreakdown.map(e => (
                     <li key={e.label} className="flex items-center gap-2 text-xs">
-                      <div className="flex-1 rounded-full h-1.5 overflow-hidden" style={{ background: 'var(--c-surface)' }}>
+                      <div className="flex-1 h-1.5 overflow-hidden" style={{ background: 'var(--c-surface)' }}>
                         <div
-                          className="bg-fuchsia-500/60 h-full rounded-full"
+                          className="bg-[var(--c-accent)] h-full"
                           style={{ width: `${(e.count / stats.totalClicks) * 100}%` }}
                         />
                       </div>
@@ -136,7 +136,7 @@ export default function PreviewModal({ code, onClose }) {
                 <ul className="space-y-1.5">
                   {stats.recentClicks.map((c, i) => (
                     <li key={i} className="flex items-center gap-3 text-xs">
-                      <span className="w-1.5 h-1.5 rounded-full bg-violet-500/60 shrink-0" />
+                      <span className="w-1.5 h-1.5 bg-[var(--c-accent)] shrink-0" />
                       <span className="shrink-0" style={{ color: 'var(--c-text-muted)' }}>
                         {new Date(c.clickedAt).toLocaleString()}
                       </span>
@@ -152,7 +152,7 @@ export default function PreviewModal({ code, onClose }) {
             )}
 
             {stats.totalClicks === 0 && (
-              <p className="text-xs italic" style={{ color: 'var(--c-text-subtle)' }}>No clicks yet — share your link to see activity here.</p>
+              <p className="text-xs italic" style={{ color: 'var(--c-text-subtle)' }}>No clicks yet, share your link to see activity here.</p>
             )}
 
             {/* Visit button */}
@@ -160,11 +160,10 @@ export default function PreviewModal({ code, onClose }) {
               href={stats.shortUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center justify-center gap-2 w-full bg-gradient-to-r
-                         from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500
-                         text-white font-semibold py-3 rounded-xl text-sm transition-all"
+              className="press flex items-center justify-center gap-2 w-full border-2 py-3 text-sm font-display font-extrabold hard"
+              style={{ background: 'var(--c-accent)', color: 'var(--c-accent-on)', borderColor: 'var(--c-border)' }}
             >
-              Visit link ↗
+              visit link ↗
             </a>
           </>)}
         </div>

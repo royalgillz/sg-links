@@ -6,18 +6,18 @@ export default function ErrorPage({ type, onClose }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
       <div
-        className="w-full max-w-sm border rounded-2xl shadow-2xl p-6 text-center"
+        className="w-full max-w-sm border-2 hard-lg p-6 text-center"
         style={{ background: 'var(--c-modal)', borderColor: 'var(--c-border)' }}
       >
         <div className="text-4xl mb-4">{config.emoji}</div>
-        <h2 className="font-semibold text-lg mb-2" style={{ color: 'var(--c-text)' }}>{config.title}</h2>
-        <p className="text-sm mb-6" style={{ color: 'var(--c-text-muted)' }}>{config.body}</p>
+        <h2 className="font-display font-extrabold text-xl mb-2" style={{ color: 'var(--c-text)' }}>{config.title}</h2>
+        <p className="copy text-sm mb-6" style={{ color: 'var(--c-text-muted)' }}>{config.body}</p>
         <button
           onClick={onClose}
-          className="w-full border font-medium py-2.5 rounded-xl text-sm transition-all hover:opacity-80"
-          style={{ background: 'var(--c-surface-hover)', borderColor: 'var(--c-border)', color: 'var(--c-text-muted)' }}
+          className="press w-full line-ink font-display font-bold py-2.5 text-sm"
+          style={{ color: 'var(--c-text)' }}
         >
-          Back to home
+          back to home
         </button>
       </div>
     </div>

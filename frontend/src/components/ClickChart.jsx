@@ -19,8 +19,8 @@ export default function ClickChart({ clicksByDay }) {
   const width = days.length * (BAR_W + GAP)
 
   return (
-    <div className="mt-4 border-t pt-4" style={{ borderColor: 'var(--c-border)' }}>
-      <p className="text-xs uppercase tracking-widest mb-3" style={{ color: 'var(--c-text-muted)' }}>Clicks over time</p>
+    <div className="mt-4 border-t-2 pt-4" style={{ borderColor: 'var(--c-border)' }}>
+      <p className="text-xs uppercase tracking-widest mb-3 font-mono" style={{ color: 'var(--c-text-muted)' }}>clicks over time</p>
       <div className="overflow-x-auto">
         <svg
           width={Math.max(width, 200)}
@@ -42,8 +42,8 @@ export default function ClickChart({ clicksByDay }) {
                   y={y}
                   width={BAR_W}
                   height={barH}
-                  rx={2}
-                  className="fill-violet-500/70 hover:fill-violet-400 transition-colors"
+                  rx={0}
+                  className="fill-[var(--c-accent)] hover:opacity-80 transition-colors"
                 />
                 {showLabel && (
                   <text

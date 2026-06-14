@@ -7,6 +7,7 @@ import ShareableStatsPage from './components/ShareableStatsPage'
 import LinkInBioPage from './components/LinkInBioPage'
 import AuthModal from './components/AuthModal'
 import LandingContent from './components/LandingContent'
+import ScrollToTop from './components/ScrollToTop'
 import { useHistory } from './hooks/useHistory'
 import { useAuth } from './hooks/useAuth'
 
@@ -24,9 +25,6 @@ export default function App() {
   // Route to standalone pages based on pathname
   if (path.startsWith('/s/')) return <ShareableStatsPage />
   if (path.startsWith('/u/')) return <LinkInBioPage />
-
-  // Always dark mode
-  document.documentElement.classList.add('dark')
 
   const [url, setUrl] = useState('')
   const [alias, setAlias] = useState('')
@@ -236,6 +234,7 @@ export default function App() {
         onLogout={logout}
       />
       <LandingContent />
+      <ScrollToTop />
     </>
   )
 }

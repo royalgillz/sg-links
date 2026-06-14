@@ -31,7 +31,7 @@ export default function PasswordModal({ code, onClose }) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
       <div
-        className="w-full max-w-sm border rounded-2xl shadow-2xl p-6"
+        className="w-full max-w-sm border-2 hard-lg p-6"
         style={{ background: 'var(--c-modal)', borderColor: 'var(--c-border)' }}
       >
 
@@ -56,8 +56,8 @@ export default function PasswordModal({ code, onClose }) {
             placeholder="Enter password"
             value={password}
             onChange={e => setPassword(e.target.value)}
-            className="w-full border rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-violet-500
-                       focus:ring-1 focus:ring-violet-500/50 transition-all"
+            className="w-full line-ink px-4 py-3 text-sm font-mono focus:outline-none focus:border-[var(--c-accent)]
+                       focus:ring-1 focus:ring-[var(--c-accent)] transition-all"
             style={{ background: 'var(--c-input)', borderColor: 'var(--c-border)', color: 'var(--c-text)' }}
           />
 
@@ -70,12 +70,10 @@ export default function PasswordModal({ code, onClose }) {
           <button
             type="submit"
             disabled={loading || !password}
-            className="w-full bg-gradient-to-r from-violet-600 to-fuchsia-600
-                       hover:from-violet-500 hover:to-fuchsia-500
-                       disabled:from-violet-800 disabled:to-fuchsia-800 disabled:cursor-not-allowed
-                       text-white font-semibold py-3 rounded-xl text-sm transition-all"
+            className="press w-full border-2 py-3 text-sm font-display font-extrabold hard disabled:opacity-50 disabled:cursor-not-allowed"
+            style={{ background: 'var(--c-accent)', color: 'var(--c-accent-on)', borderColor: 'var(--c-border)' }}
           >
-            {loading ? 'Verifying…' : 'Unlock →'}
+            {loading ? 'verifying...' : 'unlock →'}
           </button>
         </form>
       </div>

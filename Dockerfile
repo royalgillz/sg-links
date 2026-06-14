@@ -19,12 +19,15 @@ COPY src/ src/
 # Inject pre-built frontend assets so Spring Boot serves them as static files
 COPY --from=frontend /static/ src/main/resources/static/
 
-# Skip frontend-maven-plugin — already done in stage 1
+# skip frontend-maven-plugin, the frontend is already built in stage 1
 RUN mvn package -DskipTests -DskipFrontend=true -q
 
 # ---- Stage 3: Run ----
 FROM eclipse-temurin:17-jre-alpine
 WORKDIR /app
 COPY --from=build /app/target/*.jar app.jar
-EXPOSE 8080
+# Hugging Face Spaces expects the app on port 7860; Spring reads ${PORT}.
+# Platforms that inject their own PORT (Railway, etc.) override this at runtime.
+ENV PORT=7860
+EXPOSE 7860
 ENTRYPOINT ["java", "-jar", "app.jar"]

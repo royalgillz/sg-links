@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
 import ClickChart from './ClickChart'
-import ThreeBackground from './ThreeBackground'
 
 function countryFlag(code) {
   if (!code || code.length !== 2) return '🌐'
@@ -10,8 +9,8 @@ function countryFlag(code) {
 function BreakdownBar({ label, count, total }) {
   return (
     <li className="flex items-center gap-2 text-xs">
-      <div className="flex-1 rounded-full h-1.5 overflow-hidden" style={{ background: 'var(--c-surface)' }}>
-        <div className="bg-violet-500/70 h-full rounded-full" style={{ width: `${(count / total) * 100}%` }} />
+      <div className="flex-1 h-1.5 overflow-hidden" style={{ background: 'var(--c-surface)' }}>
+        <div className="bg-[var(--c-accent)] h-full" style={{ width: `${(count / total) * 100}%` }} />
       </div>
       <span className="shrink-0 w-16 truncate" style={{ color: 'var(--c-text-muted)' }}>{label}</span>
       <span className="shrink-0" style={{ color: 'var(--c-text-subtle)' }}>{count}</span>
@@ -34,28 +33,17 @@ export default function ShareableStatsPage() {
   }, [code])
 
   return (
-    <div
-      className="relative min-h-screen flex items-start justify-center p-4 pt-12 overflow-hidden"
-      style={{ background: 'var(--c-bg)' }}
-    >
-      <ThreeBackground />
-      <div className="absolute inset-0 z-10 bg-gradient-to-r from-gray-950/90 via-gray-950/60 to-transparent pointer-events-none" />
-
-      <div className="relative z-20 w-full max-w-lg">
-        {/* Back link */}
+    <div className="paper-grid relative min-h-screen flex items-start justify-center p-4 pt-12">
+      <div className="w-full max-w-lg">
+        {/* back link */}
         <div className="mb-6">
-          <a href="/" className="text-xs text-violet-400 hover:text-violet-300 transition-colors">
-            ← Create your own short link
-          </a>
+          <a href="/" className="annot text-lg">← make your own short link</a>
         </div>
 
-        <div
-          className="border backdrop-blur rounded-2xl overflow-hidden shadow-2xl"
-          style={{ background: 'var(--c-surface)', borderColor: 'var(--c-border)' }}
-        >
+        <div className="card-ink overflow-hidden">
           {/* Header */}
           <div className="px-5 py-4 border-b" style={{ borderColor: 'var(--c-border)' }}>
-            <h1 className="font-semibold" style={{ color: 'var(--c-text)' }}>Link Analytics</h1>
+            <h1 className="font-display font-extrabold text-lg" style={{ color: 'var(--c-text)' }}>link analytics</h1>
             <p className="text-xs font-mono mt-0.5" style={{ color: 'var(--c-text-muted)' }}>{code}</p>
           </div>
 
@@ -71,7 +59,7 @@ export default function ShareableStatsPage() {
                   href={stats.originalUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-sm text-violet-400 hover:text-violet-300 break-all transition-colors"
+                  className="text-sm text-[var(--c-accent-text)] hover:text-[var(--c-accent-text)] break-all transition-colors"
                 >
                   {stats.originalUrl}
                 </a>
@@ -79,12 +67,12 @@ export default function ShareableStatsPage() {
 
               {/* Summary */}
               <div className="flex gap-3">
-                <div className="flex-1 rounded-xl px-4 py-3 text-center" style={{ background: 'var(--c-surface)' }}>
-                  <p className="text-2xl font-bold font-mono text-violet-300">{stats.totalClicks}</p>
+                <div className="flex-1 px-4 py-3 text-center border-2" style={{ background: 'var(--c-surface)', borderColor: 'var(--c-border)' }}>
+                  <p className="text-2xl font-bold font-mono text-[var(--c-accent-text)]">{stats.totalClicks}</p>
                   <p className="text-xs mt-0.5" style={{ color: 'var(--c-text-muted)' }}>total clicks</p>
                 </div>
                 {stats.expiresAt && (
-                  <div className="flex-1 rounded-xl px-4 py-3 text-center" style={{ background: 'var(--c-surface)' }}>
+                  <div className="flex-1 px-4 py-3 text-center border-2" style={{ background: 'var(--c-surface)', borderColor: 'var(--c-border)' }}>
                     <p className="text-sm font-semibold text-amber-400">
                       {new Date(stats.expiresAt).toLocaleDateString(undefined, { dateStyle: 'medium' })}
                     </p>
@@ -120,8 +108,8 @@ export default function ShareableStatsPage() {
                   <ul className="space-y-1.5">
                     {stats.countryBreakdown.map(e => (
                       <li key={e.label} className="flex items-center gap-2 text-xs">
-                        <div className="flex-1 rounded-full h-1.5 overflow-hidden" style={{ background: 'var(--c-surface)' }}>
-                          <div className="bg-fuchsia-500/60 h-full rounded-full" style={{ width: `${(e.count / stats.totalClicks) * 100}%` }} />
+                        <div className="flex-1 h-1.5 overflow-hidden" style={{ background: 'var(--c-surface)' }}>
+                          <div className="bg-[var(--c-accent)] h-full" style={{ width: `${(e.count / stats.totalClicks) * 100}%` }} />
                         </div>
                         <span className="shrink-0 w-20 truncate" style={{ color: 'var(--c-text-muted)' }}>{countryFlag(e.label)} {e.label}</span>
                         <span className="shrink-0" style={{ color: 'var(--c-text-subtle)' }}>{e.count}</span>
@@ -138,10 +126,10 @@ export default function ShareableStatsPage() {
               {/* Copy shareable link */}
               <button
                 onClick={() => navigator.clipboard.writeText(window.location.href)}
-                className="w-full border font-medium py-2.5 rounded-xl text-sm transition-all hover:opacity-80"
-                style={{ background: 'var(--c-surface-hover)', borderColor: 'var(--c-border)', color: 'var(--c-text-muted)' }}
+                className="press w-full line-ink font-display font-bold py-2.5 text-sm"
+                style={{ color: 'var(--c-text)' }}
               >
-                Copy shareable link
+                copy shareable link
               </button>
             </>)}
           </div>

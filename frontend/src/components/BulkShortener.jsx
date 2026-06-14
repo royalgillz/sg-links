@@ -52,45 +52,39 @@ export default function BulkShortener() {
           placeholder={"Paste one URL per line:\nhttps://example.com/long-url-one\nhttps://example.com/long-url-two"}
           value={text}
           onChange={e => setText(e.target.value)}
-          className="w-full border rounded-xl px-4 py-3 text-sm backdrop-blur focus:outline-none resize-none
-                     focus:border-violet-500 focus:ring-1 focus:ring-violet-500/50 transition-all"
-          style={{ background: 'var(--c-input)', borderColor: 'var(--c-border)', color: 'var(--c-text)' }}
+          className="w-full line-ink px-4 py-3 text-sm font-mono focus:outline-none resize-none
+                     focus:border-[var(--c-accent)] focus:ring-1 focus:ring-[var(--c-accent)] transition-all"
+          style={{ background: 'var(--c-input)', color: 'var(--c-text)' }}
         />
         <button
           type="submit"
           disabled={loading || !text.trim()}
-          className="w-full bg-gradient-to-r from-violet-600 to-fuchsia-600
-                     hover:from-violet-500 hover:to-fuchsia-500
-                     disabled:from-violet-800 disabled:to-fuchsia-800 disabled:cursor-not-allowed
-                     text-white font-semibold px-6 py-3 rounded-xl text-sm transition-all
-                     shadow-lg shadow-violet-900/40"
+          className="press w-full border-2 px-6 py-3 text-sm font-display font-extrabold hard disabled:opacity-50 disabled:cursor-not-allowed"
+          style={{ background: 'var(--c-accent)', color: 'var(--c-accent-on)', borderColor: 'var(--c-border)' }}
         >
-          {loading ? 'Shortening…' : `Shorten ${text.split('\n').filter(l => l.trim()).length || ''} URLs →`}
+          {loading ? 'shortening...' : `shorten ${text.split('\n').filter(l => l.trim()).length || ''} URLs →`}
         </button>
       </form>
 
       {error && (
         <div className="flex items-start gap-2 bg-red-950/60 border border-red-800/60
-                        backdrop-blur text-red-300 rounded-xl px-4 py-3 text-sm">
+                         text-red-300 px-4 py-3 text-sm">
           <span className="mt-0.5">⚠</span><span>{error}</span>
         </div>
       )}
 
       {results && (
-        <div
-          className="border backdrop-blur rounded-2xl overflow-hidden"
-          style={{ background: 'var(--c-surface)', borderColor: 'var(--c-border)' }}
-        >
-          <div className="flex items-center justify-between px-4 py-3 border-b" style={{ borderColor: 'var(--c-border)' }}>
-            <span className="text-xs uppercase tracking-widest" style={{ color: 'var(--c-text-muted)' }}>
+        <div className="card-ink overflow-hidden">
+          <div className="flex items-center justify-between px-4 py-3 border-b-2" style={{ borderColor: 'var(--c-border)' }}>
+            <span className="text-xs uppercase tracking-widest font-mono" style={{ color: 'var(--c-text-muted)' }}>
               {results.filter(r => r.shortUrl).length} / {results.length} shortened
             </span>
             <button
               onClick={handleCopyAll}
-              className="text-xs border px-2.5 py-1 rounded-lg transition-all"
-              style={{ background: 'var(--c-surface-hover)', borderColor: 'var(--c-border)', color: 'var(--c-text-muted)' }}
+              className="press line-ink text-xs px-2.5 py-1 font-mono"
+              style={{ color: 'var(--c-text-muted)' }}
             >
-              Copy all
+              copy all
             </button>
           </div>
           <ul className="divide-y max-h-72 overflow-y-auto" style={{ borderColor: 'var(--c-border)' }}>
@@ -99,14 +93,14 @@ export default function BulkShortener() {
                 <div className="flex-1 min-w-0">
                   <p className="text-xs truncate" style={{ color: 'var(--c-text-subtle)' }}>{item.originalUrl}</p>
                   {item.shortUrl
-                    ? <p className="text-sm font-mono text-violet-400 truncate">{item.shortUrl}</p>
+                    ? <p className="text-sm font-mono text-[var(--c-accent-text)] truncate">{item.shortUrl}</p>
                     : <p className="text-xs text-red-400">{item.error}</p>
                   }
                 </div>
                 {item.shortUrl && (
                   <button
                     onClick={() => handleCopy(item.shortUrl)}
-                    className="shrink-0 text-xs px-2.5 py-1.5 rounded-lg transition-colors"
+                    className="shrink-0 text-xs px-2.5 py-1.5 transition-colors"
                     style={{ background: 'var(--c-surface-hover)', color: 'var(--c-text-muted)' }}
                   >
                     {copiedUrl === item.shortUrl ? '✓' : 'Copy'}

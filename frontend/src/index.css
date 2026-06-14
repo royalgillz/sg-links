@@ -2,84 +2,192 @@
 
 @variant dark (&:is(.dark, .dark *));
 
-/* ─── Light mode (default) ──────────────────────────────────── */
+/* design tokens. notebook = light (default), blueprint = dark (.dark) */
+
 :root {
-  /* Backgrounds */
-  --c-bg:             #f5f0e8;   /* warm beige                        */
-  --c-bg-alt:         #ede8df;   /* slightly darker beige             */
+  --font-display: 'Bricolage Grotesque', system-ui, sans-serif;
+  --font-body:    'Inter', system-ui, sans-serif;
+  --font-mono:    'JetBrains Mono', ui-monospace, monospace;
+  --font-hand:    'Caveat', cursive;
 
-  /* Surfaces & inputs */
-  --c-surface:        #ede8df;   /* solid — panels actually visible   */
-  --c-surface-hover:  #e0d9ce;   /* hovered surface                   */
-  --c-input:          #faf8f4;   /* warm off-white — inputs readable  */
-  --c-input-border:   #c9bfb0;   /* warm tan border                   */
-  --c-card:           #faf8f4;
-  --c-modal:          #faf8f4;
+  /* notebook (light) */
+  --c-bg:             #f3ead3;
+  --c-bg-alt:         #ece0c4;
 
-  /* Text — all WCAG AA on white/slate-50 */
-  --c-text:           #0f172a;   /* slate-900  19.7:1 ✓ */
-  --c-text-muted:     #475569;   /* slate-600   7.2:1 ✓ */
-  --c-text-subtle:    #64748b;   /* slate-500   4.6:1 ✓ */
+  --c-surface:        #fbf6e9;
+  --c-surface-hover:  #f1e7cf;
+  --c-input:          #fbf6e9;
+  --c-input-border:   #1a1a24;
+  --c-card:           #fbf6e9;
+  --c-modal:          #fbf6e9;
 
-  /* Borders */
-  --c-border:         #e2e8f0;   /* slate-200 — solid, visible         */
+  --c-text:           #1a1a24;
+  --c-text-muted:     #4a4a5a;
+  --c-text-subtle:    #6b6b7a;
 
-  /* Accent badges & ghost buttons (violet) */
-  --c-badge-bg:       rgba(109,40,217,0.07);
-  --c-badge-border:   rgba(109,40,217,0.20);
-  --c-badge-text:     #5b21b6;   /* violet-800  7.9:1 ✓ */
-  --c-ghost-bg:       rgba(109,40,217,0.07);
-  --c-ghost-border:   rgba(109,40,217,0.25);
-  --c-ghost-text:     #5b21b6;
+  --c-border:         #1a1a24;
+  --c-shadow:         #1a1a24;
+  --c-grid:           rgba(26,26,36,0.10);
 
-  /* Semantic — success */
-  --c-success-bg:     #f0fdf4;
-  --c-success-border: #bbf7d0;
-  --c-success-text:   #166534;   /* green-800  7.2:1 ✓ */
-  --c-success-code:   #15803d;   /* green-700        ✓ */
+  /* accent: marker coral */
+  --c-accent:         #ff5a3c;
+  --c-accent-on:      #ffffff;
+  --c-accent-text:    #d6391f;
+  --c-accent-soft:    rgba(255,90,60,0.12);
+  --c-accent-2:       #ffd23f;
+  --c-accent-2-text:  #946b00;
 
-  /* Canvas (Three.js) */
-  --c-canvas-opacity: 0.18;      /* subtle decorative accent in light  */
-  --c-overlay-from:   rgba(245,240,232,0.94);
-  --c-overlay-mid:    rgba(245,240,232,0.55);
+  /* legacy badge/ghost names, remapped onto the accent */
+  --c-badge-bg:       var(--c-accent-soft);
+  --c-badge-border:   var(--c-accent);
+  --c-badge-text:     var(--c-accent-text);
+  --c-ghost-bg:       var(--c-surface);
+  --c-ghost-border:   var(--c-border);
+  --c-ghost-text:     var(--c-text);
+
+  --c-success-bg:     #ecfbe8;
+  --c-success-border: #1a1a24;
+  --c-success-text:   #1f7a2e;
+  --c-success-code:   #15803d;
+
+  --c-canvas-opacity: 1;
+  --c-wire:           #1a1a24;
+  --c-wire-solid:     rgba(255,90,60,0.10);
 }
 
-/* ─── Dark mode ──────────────────────────────────────────────── */
 :root.dark {
-  --c-bg:             #030712;
-  --c-bg-alt:         #0f172a;
+  /* blueprint (dark) */
+  --c-bg:             #0c1a2b;
+  --c-bg-alt:         #0a1422;
 
-  --c-surface:        rgba(255,255,255,0.06);
-  --c-surface-hover:  rgba(255,255,255,0.12);
-  --c-input:          rgba(255,255,255,0.05);
-  --c-input-border:   rgba(255,255,255,0.12);
-  --c-card:           #0f172a;
-  --c-modal:          #111827;
+  --c-surface:        #102338;
+  --c-surface-hover:  #16314c;
+  --c-input:          #0c1a2b;
+  --c-input-border:   #34557a;
+  --c-card:           #102338;
+  --c-modal:          #102338;
 
-  --c-text:           #f8fafc;
-  --c-text-muted:     #94a3b8;
-  --c-text-subtle:    #64748b;
+  --c-text:           #e8f1ff;
+  --c-text-muted:     #a6c5e6;
+  --c-text-subtle:    #7fa3c8;
 
-  --c-border:         rgba(255,255,255,0.10);
+  --c-border:         #34557a;
+  --c-shadow:         #04101f;
+  --c-grid:           rgba(125,211,252,0.13);
 
-  --c-badge-bg:       rgba(46,16,101,0.60);
-  --c-badge-border:   rgba(91,33,182,0.50);
-  --c-badge-text:     #c4b5fd;   /* violet-300 */
-  --c-ghost-bg:       rgba(46,16,101,0.30);
-  --c-ghost-border:   rgba(91,33,182,0.50);
-  --c-ghost-text:     #c4b5fd;
+  /* accent: cyan */
+  --c-accent:         #38bdf8;
+  --c-accent-on:      #04101f;
+  --c-accent-text:    #7dd3fc;
+  --c-accent-soft:    rgba(56,189,248,0.14);
+  --c-accent-2:       #ffd23f;
+  --c-accent-2-text:  #ffe08a;
+
+  --c-badge-bg:       var(--c-accent-soft);
+  --c-badge-border:   var(--c-accent);
+  --c-badge-text:     var(--c-accent-text);
+  --c-ghost-bg:       var(--c-surface);
+  --c-ghost-border:   var(--c-border);
+  --c-ghost-text:     var(--c-text);
 
   --c-success-bg:     rgba(20,83,45,0.40);
-  --c-success-border: rgba(22,101,52,0.40);
+  --c-success-border: #34557a;
   --c-success-text:   #4ade80;
   --c-success-code:   #86efac;
 
   --c-canvas-opacity: 1;
-  --c-overlay-from:   rgba(3,7,18,0.90);
-  --c-overlay-mid:    rgba(3,7,18,0.60);
+  --c-wire:           #7dd3fc;
+  --c-wire-solid:     rgba(125,211,252,0.07);
 }
 
-/* ─── Three.js canvas — hide on mobile so it never overlaps CTA ─ */
-@media (max-width: 639px) {
-  .three-bg { display: none; }
+body {
+  font-family: var(--font-mono);
+  color: var(--c-text);
+  background-color: var(--c-bg);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* dot-grid paper background for full-bleed sections */
+.paper-grid {
+  background-color: var(--c-bg);
+  background-image: radial-gradient(var(--c-grid) 1.3px, transparent 1.3px);
+  background-size: 26px 26px;
+  background-position: -13px -13px;
+}
+
+.font-display { font-family: var(--font-display); letter-spacing: -0.02em; }
+.font-hand    { font-family: var(--font-hand); }
+
+/* readable sans for actual sentences; mono stays for UI/labels/data */
+.copy { font-family: var(--font-body); }
+
+/* handwritten annotation text */
+.annot {
+  font-family: var(--font-hand);
+  font-weight: 700;
+  color: var(--c-accent-text);
+  line-height: 1;
+}
+
+/* hard offset shadows (no blur) */
+.hard      { box-shadow: 4px 4px 0 var(--c-shadow); }
+.hard-lg   { box-shadow: 6px 6px 0 var(--c-shadow); }
+.hard-sm   { box-shadow: 3px 3px 0 var(--c-shadow); }
+
+/* solid-bordered card with a hard shadow; reserve this for content panels */
+.card-ink {
+  background: var(--c-card);
+  border: 2.5px solid var(--c-border);
+  box-shadow: 4px 4px 0 var(--c-shadow);
+}
+
+/* lighter bordered chrome (nav, tabs, toggles) so it doesn't compete with the CTA */
+.line-ink {
+  background: var(--c-card);
+  border: 2px solid var(--c-border);
+}
+
+/* click-to-press feedback for buttons */
+.press { transition: transform .08s ease, box-shadow .08s ease; }
+.press:active { transform: translate(2px,2px); box-shadow: 1px 1px 0 var(--c-shadow) !important; }
+
+/* highlighter swipe behind inline text */
+.highlight {
+  background: linear-gradient(transparent 55%, var(--c-accent-2) 55%);
+  padding: 0 2px;
+}
+
+/* rough.js draws an svg border sized to the parent; keep it behind content */
+.rough-svg {
+  position: absolute; inset: 0; width: 100%; height: 100%;
+  pointer-events: none; overflow: visible; z-index: 0;
+}
+
+.scroll-thin::-webkit-scrollbar { width: 5px; }
+.scroll-thin::-webkit-scrollbar-thumb { background: var(--c-border); border-radius: 3px; }
+
+/* motion */
+
+/* scroll-reveal: hidden until .in is added by the Reveal component */
+.reveal { opacity: 0; transform: translateY(16px); }
+.reveal.in { opacity: 1; transform: none; transition: opacity .5s ease, transform .5s ease; }
+
+/* hover lift for cards */
+.lift { transition: transform .15s ease; }
+.lift:hover { transform: translateY(-3px); }
+
+/* hand-drawn underline drawing itself in left to right on load */
+.draw-underline { animation: drawIn .7s ease .35s both; }
+@keyframes drawIn { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }
+
+/* hero demo row transitions, retriggered by react key */
+.demo-long { animation: fadeIn .35s ease both; }
+.demo-short { animation: popIn .45s ease .1s both; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes popIn { from { opacity: 0; transform: translateY(6px) scale(.98); } to { opacity: 1; transform: none; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .reveal, .reveal.in { opacity: 1; transform: none; transition: none; }
+  .draw-underline, .demo-long, .demo-short { animation: none; }
+  .lift:hover { transform: none; }
 }

@@ -46,37 +46,37 @@ export default function ApiKeys() {
   }
 
   return (
-    <div className="mt-8 border rounded-2xl overflow-hidden" style={{ borderColor: 'var(--c-border)' }}>
-      <div className="px-4 py-3 border-b flex items-center justify-between" style={{ borderColor: 'var(--c-border)' }}>
-        <h2 className="text-sm font-semibold uppercase tracking-widest" style={{ color: 'var(--c-text-muted)' }}>API Keys</h2>
-        <span className="text-xs" style={{ color: 'var(--c-text-subtle)' }}>bypass rate limiting</span>
+    <div className="mt-8 card-ink overflow-hidden">
+      <div className="px-4 py-3 border-b-2 flex items-center justify-between" style={{ borderColor: 'var(--c-border)' }}>
+        <h2 className="text-sm font-mono font-bold uppercase tracking-widest" style={{ color: 'var(--c-text-muted)' }}>API keys</h2>
+        <span className="text-xs font-mono" style={{ color: 'var(--c-text-subtle)' }}>bypass rate limiting</span>
       </div>
 
       <div className="p-4 space-y-3">
-        {/* Generate form */}
+        {/* generate form */}
         <form onSubmit={handleGenerate} className="flex gap-2">
           <input
             type="text"
-            placeholder="Key name (optional)"
+            placeholder="key name (optional)"
             value={name}
             onChange={e => setName(e.target.value)}
-            className="flex-1 border rounded-lg px-3 py-2 text-xs focus:outline-none focus:border-violet-500/50 transition-all"
-            style={{ background: 'var(--c-input)', borderColor: 'var(--c-border)', color: 'var(--c-text)' }}
+            className="flex-1 line-ink px-3 py-2 text-xs font-mono focus:outline-none focus:border-[var(--c-accent)] transition-all"
+            style={{ background: 'var(--c-input)', color: 'var(--c-text)' }}
           />
           <button
             type="submit"
             disabled={loading}
-            className="px-3 py-2 rounded-lg text-xs transition-all disabled:opacity-50 hover:opacity-80"
-            style={{ background: 'var(--c-ghost-bg)', border: '1px solid var(--c-ghost-border)', color: 'var(--c-ghost-text)' }}
+            className="press line-ink px-4 py-2 text-xs font-display font-bold disabled:opacity-50"
+            style={{ background: 'var(--c-accent)', color: 'var(--c-accent-on)' }}
           >
-            {loading ? '…' : 'Generate'}
+            {loading ? '...' : 'generate'}
           </button>
         </form>
 
-        {/* New key banner — shown once */}
+        {/* new key banner, shown once */}
         {newKey && (
-          <div className="rounded-lg px-3 py-2" style={{ background: 'var(--c-success-bg)', border: '1px solid var(--c-success-border)' }}>
-            <p className="text-xs mb-1" style={{ color: 'var(--c-success-text)' }}>Save this key — it won't be shown again</p>
+          <div className="px-3 py-2" style={{ background: 'var(--c-success-bg)', border: '2px solid var(--c-success-border)' }}>
+            <p className="text-xs mb-1" style={{ color: 'var(--c-success-text)' }}>Save this key, it will not be shown again</p>
             <div className="flex items-center gap-2">
               <code className="text-xs font-mono flex-1 truncate" style={{ color: 'var(--c-success-code)' }}>{newKey}</code>
               <button
