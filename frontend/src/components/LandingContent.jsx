@@ -1,7 +1,6 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import Rough from './Rough'
 import Reveal from './Reveal'
-import CountUp from './CountUp'
 
 const FEATURES = [
   { title: 'base62 + bloom filter', desc: 'Short codes generated fast, with an in-memory negative check before the DB.' },
@@ -78,22 +77,11 @@ function SectionHead({ title, note }) {
 }
 
 export default function LandingContent() {
-  const [globalStats, setGlobalStats] = useState(null)
-  const [statsLoading, setStatsLoading] = useState(true)
-
-  useEffect(() => {
-    fetch('/api/stats')
-      .then(r => r.ok ? r.json() : Promise.reject())
-      .then(setGlobalStats)
-      .catch(() => setGlobalStats(null))
-      .finally(() => setStatsLoading(false))
-  }, [])
-
   return (
     <div className="paper-grid border-t-2" style={{ borderColor: 'var(--c-border)' }}>
 
       {/* how it works */}
-      <section className="max-w-4xl mx-auto px-5 py-16">
+      <section className="max-w-4xl mx-auto px-5 py-12">
         <SectionHead title="How it works" note="" />
         <Reveal>
           <div className="flex flex-col sm:flex-row items-stretch gap-5">
@@ -107,7 +95,7 @@ export default function LandingContent() {
       </section>
 
       {/* features */}
-      <section className="max-w-4xl mx-auto px-5 py-16">
+      <section className="max-w-4xl mx-auto px-5 py-12">
         <SectionHead title="Everything, sketched in" note="" />
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-5">
           {FEATURES.map((f, i) => (
@@ -125,31 +113,8 @@ export default function LandingContent() {
         </div>
       </section>
 
-      {/* by the numbers */}
-      {(statsLoading || globalStats) && (
-        <section className="max-w-4xl mx-auto px-5 py-16">
-          <SectionHead title="By the numbers" note="" />
-          <div className="grid grid-cols-2 gap-5 max-w-md mx-auto">
-            {[
-              { val: globalStats?.totalUrls, label: 'links shortened' },
-              { val: globalStats?.totalClicks, label: 'clicks tracked' },
-            ].map(({ val, label }) => (
-              <div key={label} className="lift relative rough-host p-6 text-center">
-                <Rough stroke="var(--c-border)" strokeWidth={2.4} roughness={1.7} seed={label.length} hover />
-                <div className="relative z-10">
-                  {statsLoading
-                    ? <div className="h-9 w-20 mx-auto animate-pulse" style={{ background: 'var(--c-surface-hover)' }} />
-                    : <span className="font-display font-extrabold text-3xl" style={{ color: 'var(--c-accent-text)' }}><CountUp value={val} /></span>}
-                  <p className="text-xs font-mono mt-1" style={{ color: 'var(--c-text-muted)' }}>{label}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </section>
-      )}
-
       {/* faq */}
-      <section className="max-w-2xl mx-auto px-5 py-16">
+      <section className="max-w-2xl mx-auto px-5 py-12">
         <SectionHead title="Questions" note="" />
         <Reveal>
           <div className="space-y-2.5">
@@ -165,10 +130,19 @@ export default function LandingContent() {
             <p className="font-mono font-bold text-sm" style={{ color: 'var(--c-text)' }}>sg/links</p>
             <p className="text-xs mt-0.5 font-mono" style={{ color: 'var(--c-text-muted)' }}>open source, built with Spring Boot and React</p>
           </div>
-          <div className="flex items-center gap-4 text-xs font-mono" style={{ color: 'var(--c-text-muted)' }}>
+          <div className="flex items-center gap-4 text-xs font-mono flex-wrap" style={{ color: 'var(--c-text-muted)' }}>
             <a href="https://github.com/royalgillz/sg-links" target="_blank" rel="noopener noreferrer" className="hover:underline">github ↗</a>
             <span>·</span>
-            <a href="/swagger-ui.html" className="hover:underline">api docs ↗</a>
+            <a href="/swagger-ui.html" target="_blank" rel="noopener noreferrer" className="hover:underline">api docs ↗</a>
+            <span>·</span>
+            <a
+              href={`javascript:(function(){window.open('${window.location.origin}/?url='+encodeURIComponent(location.href),'_blank','noopener')})()`}
+              onClick={e => { e.preventDefault(); alert('Drag this link to your bookmarks bar, then click it on any page to shorten that URL.') }}
+              className="hover:underline cursor-grab"
+              title="drag to your bookmarks bar"
+            >
+              bookmarklet ↗
+            </a>
           </div>
         </div>
       </footer>

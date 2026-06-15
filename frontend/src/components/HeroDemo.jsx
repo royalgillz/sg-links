@@ -24,7 +24,7 @@ export default function HeroDemo() {
   const host = typeof window !== 'undefined' ? window.location.host : 'sg.li'
 
   return (
-    <div className="relative rough-host max-w-md mx-auto mt-12 text-left">
+    <div className="relative rough-host w-full text-left">
       <Rough stroke="var(--c-border)" strokeWidth={2.2} roughness={1.8} seed={5} />
       <div className="relative z-10 p-4">
         <div key={`l${i}`} className="demo-long flex items-center gap-2 text-xs font-mono mb-2" style={{ color: 'var(--c-text-subtle)' }}>

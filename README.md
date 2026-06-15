@@ -17,9 +17,9 @@ A full-featured link shortener by Sehaj Gill with analytics, user accounts, AI s
 
 The frontend is its own thing on purpose: a hand-drawn "engineer's notebook" look built with rough.js sketchy borders, a monospace/grotesque type system, neobrutalist hard shadows, a notebook/blueprint theme toggle, and a Three.js interlocking chain-link hero. No gradient soup.
 
-**Live:** https://your-user-sg-links.hf.space (replace with your own Space URL)
+**Live:** https://sehajgill-sg-links.hf.space
 
-**API docs:** https://your-user-sg-links.hf.space/swagger-ui.html
+**API docs:** https://sehajgill-sg-links.hf.space/swagger-ui.html
 
 ![App screenshot](docs/screenshot.png)
 
@@ -110,17 +110,17 @@ Full interactive docs at `/swagger-ui.html`.
 
 ```bash
 # Register
-curl -X POST https://your-user-sg-links.hf.space/api/auth/register \
+curl -X POST https://sehajgill-sg-links.hf.space/api/auth/register \
   -H "Content-Type: application/json" \
   -d '{"username": "alice", "email": "alice@example.com", "password": "secret123"}'
 
 # Login
-curl -X POST https://your-user-sg-links.hf.space/api/auth/login \
+curl -X POST https://sehajgill-sg-links.hf.space/api/auth/login \
   -H "Content-Type: application/json" \
   -d '{"usernameOrEmail": "alice", "password": "secret123"}'
 
 # Use the token
-curl -X POST https://your-user-sg-links.hf.space/api/urls \
+curl -X POST https://sehajgill-sg-links.hf.space/api/urls \
   -H "Content-Type: application/json" \
   -H "Authorization: Bearer <token>" \
   -d '{"url": "https://example.com"}'
@@ -129,7 +129,7 @@ curl -X POST https://your-user-sg-links.hf.space/api/urls \
 ### API key usage
 
 ```bash
-curl -X POST https://your-user-sg-links.hf.space/api/urls \
+curl -X POST https://sehajgill-sg-links.hf.space/api/urls \
   -H "Content-Type: application/json" \
   -H "X-API-Key: sk_your_key_here" \
   -d '{"url": "https://example.com"}'
@@ -251,7 +251,7 @@ In the Space settings, add the following as **Secrets** (or **Variables** for th
 
 | Variable | Source |
 |---|---|
-| `APP_BASE_URL` | Your Space URL, e.g. `https://your-user-sg-links.hf.space` |
+| `APP_BASE_URL` | Your Space URL, e.g. `https://sehajgill-sg-links.hf.space` |
 | `JWT_SECRET` | A long random string (32+ chars) for signing JWT tokens |
 | `PGHOST` | Neon host |
 | `PGPORT` | `5432` |

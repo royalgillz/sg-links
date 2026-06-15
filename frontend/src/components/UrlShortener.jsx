@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import Rough from './Rough'
 import HeroDemo from './HeroDemo'
+import HeroStats from './HeroStats'
 import History from './History'
 import QrCode from './QrCode'
 import ClickChart from './ClickChart'
@@ -23,7 +24,7 @@ export default function UrlShortener({
   const { isDark, toggleTheme } = useTheme()
 
   async function handleSuggestSlug() {
-    if (!url.trim()) return
+    if (!url.trim()) { setSuggestError('paste a URL above first'); return }
     setSuggestLoading(true)
     setSuggestions([])
     setSuggestError(null)
@@ -54,7 +55,7 @@ export default function UrlShortener({
   }
 
   return (
-    <div className="paper-grid min-h-screen">
+    <div className="paper-grid">
 
       {/* nav */}
       <nav className="max-w-5xl mx-auto flex items-center justify-between px-5 py-5">
@@ -95,13 +96,14 @@ export default function UrlShortener({
 
       <main className="max-w-5xl mx-auto px-5">
 
-        {/* hero */}
-        <section className="max-w-2xl mx-auto text-center pt-12 pb-16">
+        {/* hero: two columns, form on the left, live demo on the right */}
+        <section className="grid md:grid-cols-2 gap-10 items-start pt-8 pb-8">
+          <div className="text-left">
           <span className="annot text-2xl inline-block mb-2" style={{ transform: 'rotate(-2deg)' }}>
             free, open source, no sign-up ✦
           </span>
           <h1 className="font-display font-extrabold leading-[0.98] mb-4"
-              style={{ fontSize: 'clamp(2.7rem, 7vw, 4.2rem)', color: 'var(--c-text)' }}>
+              style={{ fontSize: 'clamp(2.4rem, 5vw, 3.6rem)', color: 'var(--c-text)' }}>
             Short <span className="highlight">links</span>,{' '}
             <span className="relative inline-block">
               drawn by hand
@@ -111,13 +113,13 @@ export default function UrlShortener({
             </span>
             <span style={{ color: 'var(--c-accent-text)' }}>.</span>
           </h1>
-          <p className="copy text-[15px] leading-relaxed mb-8 max-w-lg mx-auto" style={{ color: 'var(--c-text-muted)' }}>
+          <p className="copy text-[15px] leading-relaxed mb-8 max-w-md" style={{ color: 'var(--c-text-muted)' }}>
             Paste a long URL, get a clean short one, with QR codes, password locks, expiry,
             AI slug ideas, and live click analytics.
           </p>
 
           {/* mode tabs */}
-          <div className="flex justify-center gap-2 mb-4">
+          <div className="flex justify-start gap-2 mb-4">
             {['single', 'bulk'].map(m => (
               <button
                 key={m}
@@ -133,10 +135,10 @@ export default function UrlShortener({
             ))}
           </div>
 
-          {mode === 'bulk' && <div className="max-w-xl mx-auto text-left"><BulkShortener /></div>}
+          {mode === 'bulk' && <div className="text-left"><BulkShortener /></div>}
 
           {mode === 'single' && (
-            <form onSubmit={handleSubmit} className="max-w-xl mx-auto space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-4">
               {/* url + shorten: the centerpiece */}
               <div className="relative">
                 <span className="annot absolute text-xl z-20" style={{ top: '-1.5rem', right: '1.5rem', transform: 'rotate(4deg)' }}>
@@ -168,15 +170,19 @@ export default function UrlShortener({
                 </div>
               </div>
 
-              {/* options toggle */}
-              <button
-                type="button"
-                onClick={() => setShowOpts(v => !v)}
-                className="annot text-lg"
-                style={{ transform: 'rotate(-1deg)' }}
-              >
-                {showOpts ? '- fewer options' : '+ alias, expiry, password & more'}
-              </button>
+              {/* options toggle: handwritten, with a clear "click" cue + arrow */}
+              <div className="flex justify-start">
+                <button
+                  type="button"
+                  onClick={() => setShowOpts(v => !v)}
+                  className="annot text-xl underline underline-offset-4 decoration-2 hover:opacity-75 transition-opacity"
+                  style={{ transform: 'rotate(-1deg)' }}
+                >
+                  {showOpts
+                    ? '✕ hide these options'
+                    : '✎ click here for a custom alias, ✦ AI slug, expiry & password →'}
+                </button>
+              </div>
 
               {showOpts && (
                 <div className="space-y-2.5 pl-3 border-l-2 text-left" style={{ borderColor: 'var(--c-border)' }}>
@@ -210,15 +216,12 @@ export default function UrlShortener({
                             ))}
                           </div>
                         )}
-                        {suggestError && (
-                          <p className="absolute top-full left-0 mt-1 text-xs" style={{ color: 'var(--c-accent-text)' }}>{suggestError}</p>
-                        )}
                       </div>
                       <button
                         type="button"
                         onClick={handleSuggestSlug}
-                        disabled={suggestLoading || !url.trim()}
-                        title="suggest ai slugs"
+                        disabled={suggestLoading}
+                        title={url.trim() ? 'suggest AI slugs' : 'paste a URL first'}
                         className="press card-ink shrink-0 text-xs px-2.5 py-2 disabled:opacity-40 disabled:cursor-not-allowed"
                         style={{ color: 'var(--c-accent-text)' }}
                       >
@@ -238,6 +241,9 @@ export default function UrlShortener({
                         <option value="365">1 year</option>
                       </select>
                     </div>
+                    {suggestError && (
+                      <p className="text-xs" style={{ color: 'var(--c-accent-text)' }}>{suggestError}</p>
+                    )}
 
                     <input
                       type="password"
@@ -264,9 +270,16 @@ export default function UrlShortener({
                 )}
               </form>
             )}
+          </div>
 
-          {/* live demo fills the space and shows what the tool does */}
-          <HeroDemo />
+          {/* right column: live preview - demo + stats */}
+          <div className="space-y-5">
+            <HeroDemo />
+            <HeroStats />
+            <p className="annot text-xl" style={{ transform: 'rotate(-1.5deg)' }}>
+              ↑ a real, working short link
+            </p>
+          </div>
         </section>
 
         {/* error */}
@@ -385,21 +398,6 @@ export default function UrlShortener({
 
         {/* api keys are an account feature, so only surface them when signed in */}
         {isLoggedIn && <ApiKeys />}
-
-        {/* bookmarklet: low-key one-liner, not a boxed panel */}
-        <div className="flex items-center gap-2 mt-8 mb-6 text-xs font-mono" style={{ color: 'var(--c-text-subtle)' }}>
-          <span>bookmarklet:</span>
-          <a
-            href={`javascript:(function(){window.open('${window.location.origin}/?url='+encodeURIComponent(location.href),'_blank','noopener')})()`}
-            onClick={e => { e.preventDefault(); alert('Drag this link to your bookmarks bar, then click it on any page to shorten that URL.') }}
-            className="underline underline-offset-2 cursor-grab"
-            style={{ color: 'var(--c-accent-text)' }}
-            title="drag to your bookmarks bar"
-          >
-            shorten this page ↗
-          </a>
-          <span>(drag to bookmarks bar)</span>
-        </div>
       </main>
     </div>
   )
