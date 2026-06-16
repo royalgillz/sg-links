@@ -27,7 +27,7 @@ FROM eclipse-temurin:17-jre-alpine
 WORKDIR /app
 COPY --from=build /app/target/*.jar app.jar
 # Hugging Face Spaces expects the app on port 7860; Spring reads ${PORT}.
-# Platforms that inject their own PORT (Railway, etc.) override this at runtime.
+# Platforms that inject their own PORT override this at runtime.
 ENV PORT=7860
 EXPOSE 7860
 ENTRYPOINT ["java", "-jar", "app.jar"]

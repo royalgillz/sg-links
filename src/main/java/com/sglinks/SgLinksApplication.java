@@ -17,7 +17,7 @@ public class SgLinksApplication {
 
     /**
      * Reads .env and injects entries as system properties so Spring's @Value resolves them.
-     * Skips keys already present as real environment variables (Railway, CI, etc.).
+     * Skips keys already present as real environment variables (Hugging Face, CI, etc.).
      */
     private static void loadDotEnv() {
         Path env = Path.of(".env");

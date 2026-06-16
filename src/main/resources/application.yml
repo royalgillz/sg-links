@@ -48,7 +48,7 @@ management:
       application: sg-links
 
 app:
-  # Set APP_BASE_URL to your Railway domain, e.g. https://your-app.up.railway.app
+  # Set APP_BASE_URL to your public domain, e.g. https://your-user-sg-links.hf.space
   base-url: ${APP_BASE_URL:http://localhost:8080}
   rate-limit:
     requests: 10
