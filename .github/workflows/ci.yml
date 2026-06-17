@@ -8,7 +8,7 @@ on:
 
 jobs:
   backend:
-    name: Backend — build & test
+    name: Backend build and test
     runs-on: ubuntu-latest
 
     steps:
@@ -25,13 +25,13 @@ jobs:
         run: mvn test -Dtest=Base62EncoderTest -DskipFrontend=true
 
       - name: Run integration tests (Testcontainers)
-        run: mvn test -Dtest="UrlShortenerApplicationTests,UrlShortenerIntegrationTest" -DskipFrontend=true
+        run: mvn test -Dtest="SgLinksApplicationTests,SgLinksIntegrationTest" -DskipFrontend=true
 
       - name: Build JAR
         run: mvn package -DskipTests -DskipFrontend=true
 
   frontend:
-    name: Frontend — install & build
+    name: Frontend install and build
     runs-on: ubuntu-latest
 
     steps:

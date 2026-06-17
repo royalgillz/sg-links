@@ -15,7 +15,7 @@ pinned: false
 
 A full-featured link shortener by Sehaj Gill with analytics, user accounts, AI slug suggestions, and a browser extension. Built with Spring Boot, React, PostgreSQL, and Redis.
 
-The frontend is its own thing on purpose: a hand-drawn "engineer's notebook" look built with rough.js sketchy borders, a monospace/grotesque type system, neobrutalist hard shadows, a notebook/blueprint theme toggle, and a Three.js interlocking chain-link hero. No gradient soup.
+The frontend is its own thing on purpose: a hand-drawn "engineer's notebook" look built with rough.js sketchy borders, a monospace/grotesque type system, neobrutalist hard shadows, a notebook/blueprint theme toggle, and a live URL-to-short-link demo in the hero.
 
 **Live:** https://sehajgill-sg-links.hf.space
 
@@ -46,7 +46,7 @@ The frontend is its own thing on purpose: a hand-drawn "engineer's notebook" loo
 | Redis caching | Cache-aside on redirect, so popular links skip the database |
 | API keys | Generate keys to bypass rate limiting; SHA-256 hashed in DB |
 | Browser extension | Chrome Manifest V3 extension to shorten the current tab's URL |
-| 3D chain-link hero | Three.js interlocking-rings "link" motif, theme-aware, with mouse parallax |
+| Live hero demo | Animated URL to short-link preview that cycles real examples |
 | Notebook / blueprint themes | Light hand-drawn "notebook" theme and dark "blueprint" theme with a toggle |
 | GSD mode | Paste a URL for an instant shorten; bookmarklet for one-click shortening from any page |
 
@@ -56,11 +56,10 @@ The frontend is its own thing on purpose: a hand-drawn "engineer's notebook" loo
 |---|---|
 | Backend | Java 17, Spring Boot 3.2, Spring Security |
 | Auth | JWT (JJWT 0.12), BCrypt |
-| Frontend | React 19 + Vite + Tailwind CSS v4, with rough.js (hand-drawn UI) and Three.js |
+| Frontend | React 19 + Vite + Tailwind CSS v4, with rough.js for hand-drawn borders |
 | Database | PostgreSQL 16 + Flyway migrations (V1 to V8) |
 | Cache / Rate limiting | Redis 7 |
 | AI | OpenAI gpt-4o-mini (primary) + Anthropic Claude Haiku (fallback) for slug suggestions |
-| 3D graphics | Three.js |
 | API docs | SpringDoc OpenAPI (Swagger UI) |
 | Metrics | Micrometer + Prometheus (`/actuator/prometheus`) |
 | Logging | Logstash JSON (production) / human-readable (local) |
@@ -158,7 +157,7 @@ The UI is deliberately not a generic SaaS template:
 - **Hand-drawn borders**: cards, inputs, and buttons are framed with rough.js, so the strokes wobble like a felt-tip sketch.
 - **Type system**: Bricolage Grotesque for headings, JetBrains Mono for UI and data, Caveat for handwritten annotations.
 - **Neobrutalist surfaces**: solid borders with hard offset shadows, no glassmorphism or gradients.
-- **3D chain-link hero**: three interlocking rings (the "link" motif) rendered as a Three.js wireframe, with the middle ring in the brand accent and gentle mouse parallax.
+- **Live hero demo**: an animated panel that cycles real long URLs collapsing into short links, next to a live stats card.
 
 ## Browser Extension
 
